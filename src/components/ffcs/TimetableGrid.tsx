@@ -127,7 +127,13 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
         className={`tt-block tt-${colorFor(b)}${b.isClash ? " is-clash" : ""}`}
         style={{ flex: 1, minWidth: 0, height: "auto" }}
         title={blockTitle(b, false)}
-        onClick={(e) => onBlockClick?.(b, { x: e.clientX, y: e.clientY })}
+        onClick={(e) => {
+          e.currentTarget.classList.remove("is-pressed");
+          onBlockClick?.(b, { x: e.clientX, y: e.clientY });
+        }}
+        onMouseDown={(e) => e.currentTarget.classList.add("is-pressed")}
+        onMouseUp={(e) => e.currentTarget.classList.remove("is-pressed")}
+        onMouseLeave={(e) => e.currentTarget.classList.remove("is-pressed")}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
@@ -320,7 +326,7 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
                             <span
                               key={`g${i}`}
                               className={`tt-block tt-${colorFor(b)} ghost`}
-                              style={{ display: "inline-block", height: "auto", minHeight: 30, minWidth: 130 }}
+                              style={{ display: "inline-block", height: "auto", minHeight: 34, minWidth: 140 }}
                               title={`👻 peek: ${b.code} · ${b.slotLabel} — ${b.faculty}${b.venue ? ` · 📍 ${b.venue}` : ""}`}
                             >
                               <span className="ttb-code">
@@ -332,8 +338,14 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
                             <span
                               key={i}
                               className={`tt-block tt-${colorFor(b)}${b.isClash ? " is-clash" : ""}`}
-                              style={{ display: "inline-block", height: "auto", minHeight: 30, minWidth: 130 }}
-                              onClick={(e) => onBlockClick?.(b, { x: e.clientX, y: e.clientY })}
+                              style={{ display: "inline-block", height: "auto", minHeight: 34, minWidth: 140 }}
+                              onClick={(e) => {
+                                e.currentTarget.classList.remove("is-pressed");
+                                onBlockClick?.(b, { x: e.clientX, y: e.clientY });
+                              }}
+                              onMouseDown={(e) => e.currentTarget.classList.add("is-pressed")}
+                              onMouseUp={(e) => e.currentTarget.classList.remove("is-pressed")}
+                              onMouseLeave={(e) => e.currentTarget.classList.remove("is-pressed")}
                             >
                               <span className="ttb-code">
                                 {b.code} · {b.slotLabel}

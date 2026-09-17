@@ -34,8 +34,8 @@ const CARD: React.CSSProperties = {
   borderRadius: "10px 5px 12px 6px / 6px 12px 5px 10px",
   background: "var(--card)",
   boxShadow: "2px 2.5px 0 var(--shadow-ink)",
-  padding: "7px 9px",
-  transition: "transform 0.1s ease",
+  padding: "12px 14px",
+  transition: "transform 0.1s ease, filter 0.12s ease",
 };
 
 export default function CourseCart({ onGoToCourses }: { onGoToCourses: () => void }) {
@@ -116,7 +116,7 @@ export default function CourseCart({ onGoToCourses }: { onGoToCourses: () => voi
 
   return (
     <div className="min-w-0">
-      <div className="flex items-center justify-between mb-2 gap-2">
+      <div className="flex items-center justify-between mb-3 gap-2">
         <h3 className="ffcs-label" style={{ fontSize: "0.85rem" }}>
           Course list ({entries.length}) — {activeTable?.name}
         </h3>
@@ -133,7 +133,7 @@ export default function CourseCart({ onGoToCourses }: { onGoToCourses: () => voi
       </div>
 
       {clashes.length > 0 && (
-        <div className="clash-note mb-3" role="alert">
+        <div className="clash-note mb-4" role="alert">
           <strong>⚠ {clashes.length} clash{clashes.length > 1 ? "es" : ""} detected!</strong>{" "}
           {clashes.slice(0, 3).map((c, i) => {
             const a = entries.find((e) => e.uid === c.aUid);
@@ -161,14 +161,15 @@ export default function CourseCart({ onGoToCourses }: { onGoToCourses: () => voi
 
       {pairProblems.length > 0 && (
         <div
-          className="mb-3"
+          className="mb-4"
           role="alert"
           style={{
             border: "2px dashed var(--danger)",
             borderRadius: "10px 5px 12px 6px",
             background: "var(--bad-soft)",
-            padding: "0.55rem 0.8rem",
+            padding: "0.8rem 1rem",
             color: "var(--danger)",
+            lineHeight: 1.5,
           }}
         >
           <div style={{ fontWeight: "bold" }}>
@@ -229,7 +230,7 @@ export default function CourseCart({ onGoToCourses }: { onGoToCourses: () => voi
           <p>No courses yet — add some with the course picker above!</p>
         </div>
       ) : (
-        <div className="ffcs-scroll grid gap-2" style={{ maxHeight: 420, overflowY: "auto", paddingRight: 2, alignContent: "start" }}>
+        <div className="ffcs-scroll grid gap-3" style={{ maxHeight: 420, overflowY: "auto", paddingRight: 2, alignContent: "start" }}>
           {entries.map((e) => {
             const clashingWith = clashMap.get(e.uid);
             const manualColor = courseColors[`${e.code}|${e.type}`];
@@ -246,19 +247,19 @@ export default function CourseCart({ onGoToCourses }: { onGoToCourses: () => voi
                 title={clashingWith ? `Clashes with ${clashingWith.length} course(s)` : undefined}
               >
                 {/* row 1: code + badges + actions */}
-                <div className="flex items-center gap-1.5 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap">
                   <strong style={{ fontSize: "0.88rem" }}>{e.code}</strong>
                   <span
                     className="chip"
-                    style={{ fontSize: "0.62rem", padding: "0 6px", background: "var(--accent)", color: "var(--on-accent)" }}
+                    style={{ fontSize: "0.62rem", padding: "1px 7px", background: "var(--accent)", color: "var(--on-accent)" }}
                     title={COURSE_TYPE_LABELS[e.type as keyof typeof COURSE_TYPE_LABELS] || e.type}
                   >
                     {SHORT_TYPE[e.type] || e.type}
                   </span>
-                  <span className="chip" style={{ fontSize: "0.62rem", padding: "0 6px" }} title={`Slot ${e.slot}`}>
+                  <span className="chip" style={{ fontSize: "0.62rem", padding: "1px 7px" }} title={`Slot ${e.slot}`}>
                     🕒 {e.slot}
                   </span>
-                  <span className="chip" style={{ fontSize: "0.62rem", padding: "0 6px" }}>{e.credits} cr</span>
+                  <span className="chip" style={{ fontSize: "0.62rem", padding: "1px 7px" }}>{e.credits} cr</span>
                   <span style={{ flex: 1 }} />
                   <button
                     className={`swatch${manualColor === undefined || manualColor === null ? " swatch-auto" : ""}`}
@@ -279,9 +280,9 @@ export default function CourseCart({ onGoToCourses }: { onGoToCourses: () => voi
                     aria-label={`Remove ${e.code}`}
                     title={`Remove ${e.code} from this table`}
                     style={{
-                      width: 26,
-                      height: 26,
-                      minWidth: 26,
+                      width: 32,
+                      height: 32,
+                      minWidth: 32,
                       padding: 0,
                       display: "inline-flex",
                       alignItems: "center",
@@ -299,7 +300,7 @@ export default function CourseCart({ onGoToCourses }: { onGoToCourses: () => voi
                   style={{
                     fontSize: "0.78rem",
                     opacity: 0.85,
-                    marginTop: 2,
+                    marginTop: 3,
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
@@ -309,7 +310,7 @@ export default function CourseCart({ onGoToCourses }: { onGoToCourses: () => voi
                   {e.title}
                 </div>
                 {/* row 3: faculty + venue + clash/pair info */}
-                <div className="flex items-center gap-2 flex-wrap" style={{ fontSize: "0.72rem", color: "var(--muted-ink)", marginTop: 2 }}>
+                <div className="flex items-center gap-2 flex-wrap" style={{ fontSize: "0.72rem", color: "var(--muted-ink)", marginTop: 3 }}>
                   <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }} title={e.faculty}>
                     👤 {e.faculty}
                   </span>

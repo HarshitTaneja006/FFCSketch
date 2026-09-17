@@ -115,11 +115,13 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.02em;
 }
 
-/* Tabs (papercss .tabs) — make them chunky and responsive */
+/* Tabs (papercss .tabs) — make them chunky and responsive.
+   Decongest pass: bigger hit area, original type so the tab row
+   breathes instead of shouting. */
 .paper-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: 0.6rem;
   border: none !important;
 }
 .paper-tabs button {
@@ -127,9 +129,10 @@ h1, h2, h3, h4, h5, h6 {
   border: 2px solid var(--ffcs-ink);
   background: var(--card);
   color: var(--ffcs-ink);
-  padding: 0.45rem 0.9rem;
+  padding: 0.6rem 1.15rem;
   font-family: inherit;
   font-size: 1rem;
+  line-height: 1.3;
   cursor: pointer;
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   transition: transform 0.12s ease, background 0.15s ease;
@@ -142,6 +145,22 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--on-accent);
   box-shadow: 2px 3px 0 var(--shadow-strong);
   font-weight: bold;
+}
+
+/* Section hierarchy — one quiet eyebrow per major block so the eye lands
+   on ONE thing at a time instead of everything competing at once. */
+.section-eyebrow {
+  font-size: 0.68rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--label-ink);
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed color-mix(in srgb, var(--label-ink) 35%, transparent);
+}
+.side-panel .section-eyebrow {
+  margin-top: 6px;
 }
 
 /* Timetable grid ---------------------------------------------------- */
@@ -168,21 +187,21 @@ table.tt td {
 table.tt thead th {
   background: var(--head-bg);
   font-size: 0.98rem;
-  padding: 6px 4px;
+  padding: 10px 6px;
   border-bottom: 2.5px solid var(--ffcs-ink);
 }
 table.tt .tt-time {
-  width: 76px;
-  min-width: 76px;
+  width: 84px;
+  min-width: 84px;
   background: var(--time-bg);
   font-size: 0.72rem;
-  line-height: 1.15;
+  line-height: 1.3;
   text-align: center;
   color: var(--muted-ink);
-  padding: 3px 2px;
+  padding: 6px 4px;
 }
 table.tt td.tt-cell {
-  height: 34px;
+  height: 44px;
   position: relative;
 }
 table.tt td.tt-lunch {
@@ -199,24 +218,33 @@ table.tt td.tt-lunch {
   padding: 4px;
 }
 
-/* course block colors (pastel, paper-friendly) */
+/* course block colors (pastel, paper-friendly).
+   Bigger block, original type. Hover = gentle lift only; CLICK/ACTIVE =
+   visibly darkens so the press is unmistakable (hover shows, click confirms). */
 .tt-block {
-  margin: 2px;
-  height: calc(100% - 4px);
+  margin: 3px;
+  height: calc(100% - 6px);
   border: 2px solid var(--tt-ink);
-  border-radius: 6px 3px 7px 4px / 4px 7px 3px 6px;
-  padding: 2px 4px;
+  border-radius: 8px 4px 9px 5px / 5px 9px 4px 8px;
+  padding: 5px 7px;
   font-size: 0.72rem;
-  line-height: 1.18;
+  line-height: 1.3;
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  transition: transform 0.1s ease;
+  transition: transform 0.1s ease, filter 0.12s ease, box-shadow 0.12s ease;
 }
 .tt-block:hover {
-  transform: scale(1.03);
+  transform: scale(1.04);
   z-index: 5;
   box-shadow: 2px 3px 0 var(--shadow-ink);
+  filter: brightness(1.03);
+}
+.tt-block:active,
+.tt-block.is-pressed {
+  transform: scale(0.98);
+  filter: brightness(0.82) saturate(1.12);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.28);
 }
 .tt-block .ttb-code {
   font-weight: bold;
@@ -274,11 +302,11 @@ table.tt td.tt-lunch {
   background: transparent;
 }
 
-/* small caps section label */
+/* small caps section label — quieter so headings own the hierarchy */
 .ffcs-label {
   font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.12em;
   color: var(--label-ink);
   font-weight: bold;
 }
@@ -293,16 +321,17 @@ html.night-sketch .sketch-underline {
   background-image: linear-gradient(transparent 62%, rgba(255, 215, 102, 0.5) 62%);
 }
 
-/* badges row */
+/* badges row — roomier chip, original type */
 .chip {
   display: inline-block;
   border: 1.8px solid var(--ffcs-ink);
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  padding: 1px 9px;
+  padding: 3px 12px;
   font-size: 0.78rem;
+  line-height: 1.35;
   background: var(--card);
   color: var(--ffcs-ink);
-  margin: 2px;
+  margin: 3px;
   white-space: nowrap;
 }
 .chip.active {
@@ -318,28 +347,29 @@ html.night-sketch .sketch-underline {
   transform: translateY(-1.5px);
 }
 
-/* clash warning stripe */
+/* clash warning stripe — more air, original type */
 .clash-note {
   border: 2.5px dashed var(--danger);
   border-radius: 10px 5px 12px 6px / 6px 12px 5px 10px;
   background: var(--bad);
-  padding: 0.55rem 0.8rem;
+  padding: 0.9rem 1.1rem;
+  line-height: 1.5;
   color: var(--danger);
 }
 
-/* stat cards */
+/* stat cards — bigger card, original numbers/labels so six of them don't shout */
 .stat-card {
   border: 2.5px solid var(--ffcs-ink);
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   background: var(--card);
-  padding: 0.7rem 0.9rem;
+  padding: 1rem 1.1rem;
   box-shadow: 3px 4px 0 var(--shadow-ink);
   min-width: 0;
 }
 .stat-card .stat-value {
   font-size: 1.45rem;
   font-weight: bold;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--good-strong);
 }
 html.night-sketch .stat-card .stat-value {
@@ -349,7 +379,9 @@ html.night-sketch .stat-card .stat-value {
   font-size: 0.78rem;
   color: var(--muted-ink);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.09em;
+  line-height: 1.4;
+  margin-top: 2px;
 }
 
 /* generator combo card */
@@ -369,21 +401,28 @@ html.night-sketch .stat-card .stat-value {
   border-color: var(--good-strong);
 }
 
-/* priority arrow buttons */
+/* priority arrow buttons — larger touch target, original glyph */
 .prio-btn {
   border: 2px solid var(--ffcs-ink);
   background: var(--input);
   color: var(--ffcs-ink);
-  border-radius: 6px 3px 7px 4px;
-  width: 26px;
-  height: 26px;
+  border-radius: 8px 4px 9px 5px;
+  width: 32px;
+  height: 32px;
   line-height: 1;
   font-size: 0.8rem;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .prio-btn:hover {
   background: var(--accent);
   color: var(--on-accent);
+}
+.prio-btn:active {
+  filter: brightness(0.84);
+  transform: scale(0.94);
 }
 
 /* sticky footer layout */
@@ -502,12 +541,17 @@ summary:focus-visible,
   50% { transform: translateY(-4px) rotate(2deg); }
 }
 
-/* timetable wrapped like a pinned sheet */
+/* timetable wrapped like a pinned sheet — extra padding = breathing room */
 .tt-sheet {
   position: relative;
   background: var(--card);
-  padding: 14px;
+  padding: 20px;
   border-radius: 10px;
+}
+@media (min-width: 768px) {
+  .tt-sheet {
+    padding: 24px;
+  }
 }
 .tt-sheet::before {
   content: "";
@@ -1139,10 +1183,11 @@ button.slot-used:hover {
 
 /* BUGFIX: papercss ships h2 { font-size: 3rem }+ which out-cascades the
    Tailwind text-xl utility — the timetable title rendered ~60px and clipped
-   on mobile. Scope headings back to hand-drawn-sheet sizes. */
+   on mobile. Scope headings back to hand-drawn-sheet sizes (kept at the
+   original 1.45rem — spacing carries the hierarchy now). */
 main h2 {
   font-size: 1.45rem;
-  line-height: 1.3;
+  line-height: 1.35;
   font-family: inherit;
 }
 
@@ -1390,13 +1435,14 @@ main h2 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   border: 2.5px dashed var(--ffcs-ink);
   border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
   background: color-mix(in srgb, var(--accent) 26%, var(--card));
   box-shadow: 3px 4px 0 var(--shadow-ink);
-  padding: 8px 12px;
+  padding: 12px 16px;
   font-size: 0.86rem;
+  line-height: 1.5;
   animation: peek-in 0.25s ease;
 }
 @keyframes peek-in {
@@ -1516,20 +1562,23 @@ table.tt td.tt-lunch-h {
   font-size: 0.72rem;
 }
 
-/* orientation segmented toggle (vertical | horizontal) */
+/* orientation segmented toggle (vertical | horizontal) — bigger tap, original type */
 .ori-btn {
   font-family: inherit;
   font-size: 0.72rem;
-  padding: 2.5px 10px;
+  padding: 6px 14px;
   border: none;
   background: transparent;
   color: var(--ffcs-ink);
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, filter 0.12s ease;
 }
 .ori-btn:hover {
   background: var(--flex-bg);
+}
+.ori-btn:active {
+  filter: brightness(0.85);
 }
 .ori-btn:focus-visible {
   outline: 2px dashed var(--accent);
@@ -1597,9 +1646,10 @@ table.tt td.tt-lunch-h {
 /* ------------------------------------------------------------------ */
 
 /* faint pencil-hint slot code shown inside every free timetable cell
-   ("A1" / "L3" / "A1 · L3") — tells students which slot is free there */
+   ("A1" / "L3" / "A1 · L3") — tells students which slot is free there.
+   Taller cell, same hint size — calm, not noisy. */
 .tt-empty-slot {
-  min-height: 30px;
+  min-height: 38px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -1609,25 +1659,54 @@ table.tt td.tt-lunch-h {
   font-weight: 600;
   letter-spacing: 0.4px;
   color: var(--label-ink);
-  opacity: 0.55;
+  opacity: 0.45;
   overflow-wrap: anywhere;
-  padding: 1px 2px;
+  padding: 3px 4px;
   user-select: none;
+}
+td.tt-empty:active {
+  background: color-mix(in srgb, var(--accent) 32%, var(--card));
+}
+td.tt-empty:active .tt-empty-slot {
+  opacity: 1;
+  color: var(--ffcs-ink);
 }
 .tt-empty:hover .tt-empty-slot {
   opacity: 0.9;
   color: var(--accent-strong, var(--ffcs-ink));
 }
 
-/* horizontal mode: squeeze block text so 12 period columns stay readable */
+/* horizontal mode: roomier block padding so 12 period columns stay readable */
 table.tt.tt-horizontal .tt-block {
   font-size: 0.62rem;
-  line-height: 1.12;
-  padding: 1.5px 3px;
+  line-height: 1.2;
+  padding: 3px 5px;
 }
 table.tt.tt-horizontal .ttb-code {
   font-size: 0.64rem;
 }
 table.tt.tt-horizontal .ttb-fac {
   font-size: 0.56rem;
+}
+
+/* pressed feedback everywhere else: hover lifts, click darkens.
+   One rule so attention stays on the timetable, not on competing hovers. */
+.chip.clickable:active,
+.paper-tabs button:active,
+.combo-card:active,
+.cart-card:active,
+.pref-chip:active {
+  filter: brightness(0.84);
+  transform: scale(0.98);
+}
+/* JS-held press (mouse down before click fires) — same darkening */
+.is-pressed {
+  filter: brightness(0.82) saturate(1.1) !important;
+  transform: scale(0.98);
+}
+/* side panels get internal rhythm back after p-5 upgrade */
+.side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }

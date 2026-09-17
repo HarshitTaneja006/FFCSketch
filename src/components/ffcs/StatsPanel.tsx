@@ -23,10 +23,10 @@ export default function StatsPanel() {
 
   return (
     <div>
-      <h3 className="ffcs-label" style={{ fontSize: "0.85rem", marginBottom: 8 }}>
+      <h3 className="ffcs-label" style={{ fontSize: "0.85rem", marginBottom: 12 }}>
         Table insights
       </h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="stat-card">
           <div className="stat-value">{stats.totalCredits % 1 === 0 ? stats.totalCredits : stats.totalCredits.toFixed(1)}</div>
           <div className="stat-label">Total credits</div>
@@ -46,7 +46,7 @@ export default function StatsPanel() {
           <div className="stat-label">Free days</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value" style={{ fontSize: "1rem", paddingTop: 4 }}>
+          <div className="stat-value" style={{ fontSize: "1rem", paddingTop: 5 }}>
             {rangeLabel(stats.earliestStart, stats.latestEnd)}
           </div>
           <div className="stat-label">Earliest → latest</div>
@@ -58,7 +58,7 @@ export default function StatsPanel() {
       </div>
 
       {stats.freeDays.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           {stats.freeDays.map((d) => (
             <span
               key={d}
@@ -73,7 +73,7 @@ export default function StatsPanel() {
       )}
 
       {stats.freeDays.length > 0 && entries.length > 0 && (
-        <div style={{ fontSize: "0.72rem", color: "var(--muted-ink)", marginTop: 6 }}>
+        <div style={{ fontSize: "0.72rem", color: "var(--muted-ink)", marginTop: 8, lineHeight: 1.5 }}>
           Tip: use the timetable's free cells (they show their slot codes) to fit one more course.
         </div>
       )}

@@ -389,9 +389,9 @@ export default function Page() {
         </div>
       )}
 
-      <main className="mx-auto w-full px-3 py-4" style={{ maxWidth: 1280 }}>
+      <main className="mx-auto w-full px-4 sm:px-6 py-6 sm:py-10" style={{ maxWidth: 1280 }}>
         {/* tabs */}
-        <nav className="paper-tabs mb-4 no-print" aria-label="Sections">
+        <nav className="paper-tabs mb-6 sm:mb-8 no-print" aria-label="Sections">
           {TABS.map((t) => (
             <button
               key={t.key}
@@ -417,12 +417,15 @@ export default function Page() {
           <div
             className={
               gridOrientation === "horizontal"
-                ? "grid gap-4 items-start"
-                : "grid gap-4 lg:grid-cols-3 items-start"
+                ? "grid gap-8 lg:gap-10 items-start"
+                : "grid gap-8 lg:gap-10 lg:grid-cols-3 items-start"
             }
           >
             <section className={gridOrientation === "horizontal" ? "" : "lg:col-span-2"} aria-label="Weekly timetable">
-              <div className="flex items-baseline justify-between mb-2 flex-wrap gap-2">
+              <p className="section-eyebrow" aria-hidden>
+                01 — Weekly timetable
+              </p>
+              <div className="flex items-baseline justify-between mb-4 flex-wrap gap-3">
                 <h2 className="text-xl font-bold flex items-center gap-2 flex-wrap">
                   <span className="sketch-underline">{activeTable?.name}</span>
                   {activeTable && activeTable.entries.length >= 2 && clashCount === 0 && (
@@ -485,7 +488,7 @@ export default function Page() {
                 />
               )}
               {peek && (
-                <div className="peek-banner mb-3" role="status">
+                <div className="peek-banner mb-5" role="status">
                   <span aria-hidden className="peek-ghost">👻</span>
                   <span>
                     <strong>Peeking {peek.label}</strong> — {peek.sections.length} courses penciled in as dashed blocks.
@@ -527,46 +530,52 @@ export default function Page() {
             <section
               className={
                 gridOrientation === "horizontal"
-                  ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 items-start"
-                  : "grid gap-4 lg:sticky lg:top-[64px] lg:max-h-[calc(100vh-80px)] lg:overflow-y-auto lg:self-start lg:pr-1 side-scroll"
+                  ? "grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-start pt-2"
+                  : "grid gap-6 lg:sticky lg:top-[64px] lg:max-h-[calc(100vh-80px)] lg:overflow-y-auto lg:self-start lg:pr-1 side-scroll lg:pt-2 lg:pb-4"
               }
               aria-label="Add courses, course list and insights"
             >
               {/* 2-stage course picker (was the Courses tab) */}
               <div
-                className="p-3 taped corner-fold"
+                className="p-5 taped corner-fold side-panel"
                 style={{
                   border: "2.5px solid var(--ffcs-ink)",
                   borderRadius: "12px 6px 14px 8px / 8px 14px 6px 12px",
                   background: "var(--card)",
                   boxShadow: "3px 4px 0 var(--shadow-ink)",
-                  marginTop: 8,
                 }}
               >
+                <p className="section-eyebrow" aria-hidden>
+                  02 — Add courses
+                </p>
                 <CoursePicker initialQuery={seed.q} seedNonce={seed.n} />
               </div>
               <div
-                className="p-3 taped taped-r corner-fold"
+                className="p-5 taped taped-r corner-fold side-panel"
                 style={{
                   border: "2.5px solid var(--ffcs-ink)",
                   borderRadius: "12px 6px 14px 8px / 8px 14px 6px 12px",
                   background: "var(--card)",
                   boxShadow: "3px 4px 0 var(--shadow-ink)",
-                  marginTop: 8,
                 }}
               >
+                <p className="section-eyebrow" aria-hidden>
+                  03 — Course list
+                </p>
                 <CourseCart onGoToCourses={focusPicker} />
               </div>
               <div
-                className="p-3 taped taped-r corner-fold"
+                className="p-5 taped taped-r corner-fold side-panel"
                 style={{
                   border: "2.5px solid var(--ffcs-ink)",
                   borderRadius: "12px 6px 14px 8px / 8px 14px 6px 12px",
                   background: "var(--card)",
                   boxShadow: "3px 4px 0 var(--shadow-ink)",
-                  marginTop: 8,
                 }}
               >
+                <p className="section-eyebrow" aria-hidden>
+                  04 — Insights
+                </p>
                 <StatsPanel />
               </div>
             </section>
@@ -575,14 +584,14 @@ export default function Page() {
 
         {/* GENERATOR TAB */}
         {tab === "generator" && (
-          <section aria-label="Timetable generator">
+          <section aria-label="Timetable generator" className="mt-2">
             <Generator onPreview={genPreview} onPeek={handlePeek} />
           </section>
         )}
 
         {/* COMPARE TAB */}
         {tab === "compare" && (
-          <section aria-label="Compare timetables">
+          <section aria-label="Compare timetables" className="mt-2">
             <div ref={exportRef}>
               <CompareView />
             </div>
@@ -598,9 +607,9 @@ export default function Page() {
               borderRadius: "12px 6px 14px 8px / 8px 14px 6px 12px",
               background: "var(--card)",
               boxShadow: "3px 4px 0 var(--shadow-ink)",
-              padding: 16,
+              padding: 24,
             }}
-            className="mb-4"
+            className="mb-6 mt-2"
           >
             <SlotView
               usedSlots={usedSlots}
@@ -611,7 +620,9 @@ export default function Page() {
         )}
 
         {/* HELP */}
-        <HelpSection />
+        <div className="mt-10 sm:mt-14">
+          <HelpSection />
+        </div>
       </main>
 
       {/* FOOTER — sticky to bottom */}

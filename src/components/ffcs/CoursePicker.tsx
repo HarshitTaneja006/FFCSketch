@@ -302,11 +302,11 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
       .map(meetingLabel)
       .join(" · ");
     return (
-      <div key={s.id} className="p-2.5" style={cardStyle}>
-        <div className="flex items-start justify-between gap-2">
+      <div key={s.id} className="p-3.5" style={cardStyle}>
+        <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             {showCourse && (
-              <div className="truncate" style={{ fontSize: "0.86rem", marginBottom: 2 }}>
+              <div className="truncate" style={{ fontSize: "0.86rem", marginBottom: 3 }}>
                 <strong>{s.code}</strong>{" "}
                 <span style={{ color: "var(--muted-ink)", fontSize: "0.78rem" }}>{s.title}</span>
               </div>
@@ -357,7 +357,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
             })()}
             </div>
             {times && (
-              <div style={{ fontSize: "0.74rem", color: "var(--muted-ink)", marginTop: 3 }}>
+              <div style={{ fontSize: "0.74rem", color: "var(--muted-ink)", marginTop: 4 }}>
                 {times}
                 {getSectionMeetings(s.slot, campus).length > 3 && " …"}
               </div>
@@ -369,13 +369,13 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
                   display: "inline-flex",
                   alignItems: "center",
                   gap: 4,
-                  marginTop: 4,
+                  marginTop: 6,
                   fontSize: "0.7rem",
                   fontWeight: "bold",
                   color: isThisOne ? "var(--good-strong)" : "var(--muted-ink)",
                   border: `1.5px dashed ${isThisOne ? "var(--good-strong)" : "var(--cell-border)"}`,
                   borderRadius: "8px 4px 10px 5px",
-                  padding: "1px 7px",
+                  padding: "2px 8px",
                   background: isThisOne ? "var(--good-soft)" : "var(--flex-bg)",
                 }}
                 title={
@@ -394,19 +394,19 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
               </div>
             )}
             {clashing.length > 0 && !isThisOne && (
-              <div style={{ fontSize: "0.72rem", color: "var(--danger)", fontWeight: "bold" }}>
+              <div style={{ fontSize: "0.72rem", color: "var(--danger)", fontWeight: "bold", marginTop: 3 }}>
                 ⚠ clashes with {clashing.length} course{clashing.length > 1 ? "s" : ""} in table
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             {added && !isThisOne ? (
               <button
                 className="prio-btn swap-btn"
                 onClick={() => handleSwap(s, existing!)}
                 title={`Switch the table to this section (replaces ${existing!.slot} · ${existing!.faculty})`}
                 aria-label={`Switch ${s.code} to section ${s.slot}`}
-                style={{ minWidth: 30, height: 30, background: "var(--accent)", color: "var(--on-accent)" }}
+                style={{ minWidth: 34, height: 34, background: "var(--accent)", color: "var(--on-accent)" }}
               >
                 <Repeat2 size={16} />
               </button>
@@ -418,8 +418,8 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
                 title={added ? "Already in the table — use ⇄ on other sections" : "Add to table"}
                 aria-label={`Add ${s.code} section ${s.slot}`}
                 style={{
-                  minWidth: 30,
-                  height: 30,
+                  minWidth: 34,
+                  height: 34,
                   opacity: added ? 0.45 : 1,
                   background: added ? "var(--tt6)" : "var(--accent)",
                   color: added ? "var(--ffcs-ink)" : "var(--on-accent)",
@@ -433,7 +433,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
               onClick={() => handleWishlist(s)}
               title="Send to Generator wishlist (auto-build a clash-free plan)"
               aria-label={`Add ${s.code} to generator wishlist`}
-              style={{ minWidth: 30, height: 30, background: "var(--card)" }}
+              style={{ minWidth: 34, height: 34, background: "var(--card)" }}
             >
               <Sparkles size={14} />
             </button>
@@ -519,7 +519,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
               width: "100%",
               border: "2px solid var(--ffcs-ink)",
               borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
-              padding: "8px 32px 8px 32px",
+              padding: "10px 36px 10px 34px",
               fontFamily: "inherit",
               background: "var(--input)",
               fontSize: "0.92rem",
@@ -543,7 +543,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
             style={{
               border: "2px solid var(--ffcs-ink)",
               borderRadius: 8,
-              padding: "7px 8px",
+              padding: "9px 10px",
               fontFamily: "inherit",
               background: "var(--input)",
               fontSize: "0.84rem",
@@ -565,7 +565,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
             style={{
               border: "2px solid var(--ffcs-ink)",
               borderRadius: 8,
-              padding: "7px 8px",
+              padding: "9px 10px",
               fontFamily: "inherit",
               background: "var(--input)",
               fontSize: "0.84rem",
@@ -584,12 +584,13 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
       {picked ? (
         <div className="ffcs-scroll" style={{ maxHeight: 480, overflowY: "auto" }}>
           <div
-            className="p-2 mb-2"
+            className="p-2.5 mb-3"
             style={{
               border: "2px dashed var(--cell-border)",
               borderRadius: 8,
               background: "var(--flex-bg)",
               fontSize: "0.82rem",
+              lineHeight: 1.5,
             }}
           >
             <strong>{picked.title}</strong>
@@ -607,11 +608,11 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
               width: "100%",
               border: "2px solid var(--cell-border)",
               borderRadius: 8,
-              padding: "6px 10px",
+              padding: "9px 12px",
               fontFamily: "inherit",
               background: "var(--input)",
               fontSize: "0.84rem",
-              marginBottom: 8,
+              marginBottom: 10,
             }}
           />
           {sectionsLoading ? (
@@ -623,21 +624,22 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
               No sections match that filter.
             </div>
           ) : (
-            <div className="grid gap-2">
+            <div className="grid gap-3">
               {filteredSections.map((s) => renderSectionCard(s, false))}
             </div>
           )}
         </div>
       ) : isSlotQuery ? (
         /* ---------------- SLOT MODE: every section in this exact slot ---------------- */
-        <div className="ffcs-scroll" style={{ maxHeight: 480, overflowY: "auto" }}>
+        <div className="ffcs-scroll" style={{ maxHeight: 480, overflowY: "auto", paddingRight: 2 }}>
           <div
-            className="p-2 mb-2 flex items-start gap-2"
+            className="p-2.5 mb-3 flex items-start gap-2"
             style={{
               border: "2px dashed var(--accent)",
               borderRadius: 8,
               background: "var(--flex-bg)",
               fontSize: "0.82rem",
+              lineHeight: 1.5,
             }}
           >
             <Clock size={16} style={{ flexShrink: 0, marginTop: 2 }} aria-hidden />
@@ -667,14 +669,14 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
             </div>
           ) : (
             slotGroups.map(([code, secs]) => (
-              <div key={code} className="mb-3">
-                <div className="ffcs-label" style={{ marginBottom: 4, fontSize: "0.76rem" }}>
+              <div key={code} className="mb-4">
+                <div className="ffcs-label" style={{ marginBottom: 6, fontSize: "0.76rem" }}>
                   {code} · {secs.length} section{secs.length === 1 ? "" : "s"}{" "}
                   <span style={{ textTransform: "none", letterSpacing: 0, fontWeight: 400 }}>
                     — {secs[0].title}
                   </span>
                 </div>
-                <div className="grid gap-2">{secs.map((s) => renderSectionCard(s, false))}</div>
+                <div className="grid gap-3">{secs.map((s) => renderSectionCard(s, false))}</div>
               </div>
             ))
           )}
@@ -682,7 +684,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
       ) : (
         /* ---------------- STAGE 1: course list ---------------- */
         <>
-          <div className="flex items-center justify-between mb-2 gap-2">
+          <div className="flex items-center justify-between mb-3 gap-2">
             <span className="ffcs-label" title={activeTable ? `Adding to "${activeTable.name}"` : undefined}>
               {loading ? "Searching…" : `${total} course${total === 1 ? "" : "s"} found`}
             </span>
@@ -690,7 +692,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
               Page {page}/{totalPages}
             </span>
           </div>
-          <div className="ffcs-scroll" style={{ maxHeight: 420, overflowY: "auto" }}>
+          <div className="ffcs-scroll" style={{ maxHeight: 420, overflowY: "auto", paddingRight: 2 }}>
             {loading && courses.length === 0 ? (
               <div className="flex items-center justify-center py-8 gap-2" style={{ color: "var(--label-ink)" }}>
                 <Loader2 className="animate-spin" size={18} /> loading courses…
@@ -700,7 +702,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
                 <span className="empty-doodle" aria-hidden>🔍</span>
                 <br />
                 No courses match your search.
-                <span style={{ display: "block", marginTop: 4, fontSize: "0.78rem" }}>
+                <span style={{ display: "block", marginTop: 6, fontSize: "0.78rem" }}>
                   Teaching a project or club instead? Create a{" "}
                   <button
                     onClick={() => setCustomOpen(true)}
@@ -721,16 +723,19 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
                 </span>
               </div>
             ) : (
-              <div className="grid gap-2">
+              <div className="grid gap-3">
                 {courses.map((c) => (
                   <button
                     key={c.code}
                     onClick={() => openCourse(c)}
-                    className="p-2.5 text-left"
-                    style={{ ...cardStyle, cursor: "pointer", transition: "transform 0.1s" }}
+                    className="p-3.5 text-left"
+                    style={{ ...cardStyle, cursor: "pointer", transition: "transform 0.1s, filter 0.12s" }}
+                    onMouseDown={(e) => e.currentTarget.classList.add("is-pressed")}
+                    onMouseUp={(e) => e.currentTarget.classList.remove("is-pressed")}
+                    onMouseLeave={(e) => e.currentTarget.classList.remove("is-pressed")}
                     title={`Pick ${c.code} — then choose a faculty/slot`}
                   >
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <strong style={{ fontSize: "0.92rem" }}>{c.code}</strong>
@@ -742,13 +747,13 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
                           ))}
                         </div>
                         <div
-                          className="truncate mt-0.5"
+                          className="truncate mt-1"
                           title={c.title}
                           style={{ fontSize: "0.84rem" }}
                         >
                           {c.title}
                         </div>
-                        <div style={{ fontSize: "0.72rem", color: "var(--muted-ink)" }}>
+                        <div style={{ fontSize: "0.72rem", color: "var(--muted-ink)", marginTop: 2 }}>
                           {c.sectionCount} section{c.sectionCount === 1 ? "" : "s"} ·{" "}
                           {c.faculties.join(", ")}
                           {c.facultyCount > c.faculties.length ? ` +${c.facultyCount - c.faculties.length} more` : ""}
@@ -769,7 +774,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
 
           {/* pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-2">
+            <div className="flex items-center justify-center gap-3 mt-3">
               <button
                 className="prio-btn"
                 onClick={() => goToPage(Math.max(1, page - 1))}
