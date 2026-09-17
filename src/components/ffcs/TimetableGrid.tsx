@@ -262,7 +262,7 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
                 {Array.from({ length: TOTAL_ROWS }, (_, p) => {
                   const { start, end } = labPeriodRange(p);
                   const th = (
-                    <th key={p} className="tt-time-h" title={`${fmtTime(start)} – ${fmtTime(end)}`}>
+                    <th key={p} className="tt-time-h" title={`${fmtTime(start)} - ${fmtTime(end)}`}>
                       <div>{fmtTimeShort(start)}</div>
                       <div style={{ opacity: 0.7 }}>{fmtTimeShort(end)}</div>
                     </th>
@@ -312,7 +312,7 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
                   {(() => {
                     const extra = allBlocks.filter((b) => !b.isFlex && b.rowStart === 12);
                     if (extra.length === 0)
-                      return <span style={{ opacity: 0.55 }}>Evening slot row (S1–S4)</span>;
+                      return <span style={{ opacity: 0.55 }}>Evening slot row (S1-S4)</span>;
                     return (
                       <div className="flex flex-wrap gap-1 justify-center">
                         {extra.map((b, i) =>
@@ -393,7 +393,7 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
           </span>
         )}
         <span className="chip" style={{ opacity: 0.7 }}>
-          Grid shows {fmtTime(LAB_PERIOD_STARTS[0])} – 7:20 PM · lunch {fmtTime(LUNCH.start)}–
+          Grid shows {fmtTime(LAB_PERIOD_STARTS[0])} - 7:20 PM · lunch {fmtTime(LUNCH.start)}-
           {fmtTime(LUNCH.end).replace(":00", "")}
         </span>
       </div>

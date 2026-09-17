@@ -1268,7 +1268,7 @@ main h2 {
   position: absolute;
   left: 0;
   right: 0;
-  /* lunch = 12:50–14:00 within the 8:00–20:00 window */
+  /* lunch = 12:50-14:00 within the 8:00-20:00 window */
   top: 40.3%;
   height: 9.7%;
   background: color-mix(in srgb, var(--accent) 20%, transparent);
@@ -1631,4 +1631,3 @@ table.tt.tt-horizontal .ttb-code {
 table.tt.tt-horizontal .ttb-fac {
   font-size: 0.56rem;
 }
-

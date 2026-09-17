@@ -37,8 +37,8 @@ const FAQS: FaqItem[] = [
     a: (
       <>
         Slots are fixed timetable codes published by VIT. Theory slots are a single 55-minute
-        period — e.g. <code>A1</code> meets Monday 8:00–8:50 AM. Lab slots are 50-minute periods,
-        usually taken in pairs — e.g. <code>L1+L2</code> meets Monday 8:00–9:40 AM. Test any set
+        period — e.g. <code>A1</code> meets Monday 8:00-8:50 AM. Lab slots are 50-minute periods,
+        usually taken in pairs — e.g. <code>L1+L2</code> meets Monday 8:00-9:40 AM. Test any set
         of slots together in the <strong>Slot View</strong> tab before you commit to sections.
       </>
     ),

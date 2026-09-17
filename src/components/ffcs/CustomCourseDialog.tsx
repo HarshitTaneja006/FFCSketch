@@ -434,7 +434,7 @@ function CustomCourseForm({ onClose, initialSlots }: { onClose: () => void; init
           >
             <strong>Weekly footprint:</strong>{" "}
             {meetings
-              .map((m) => `${DAY_LABELS[m.day].slice(0, 3)} ${fmtTime(m.start)}–${fmtTime(m.end)}${m.isLab ? " 🧪" : ""}`)
+              .map((m) => `${DAY_LABELS[m.day].slice(0, 3)} ${fmtTime(m.start)}-${fmtTime(m.end)}${m.isLab ? " 🧪" : ""}`)
               .join(" · ")}
             {clashEntries.length > 0 && (
               <div style={{ color: "var(--danger)", fontWeight: "bold", marginTop: 3 }}>

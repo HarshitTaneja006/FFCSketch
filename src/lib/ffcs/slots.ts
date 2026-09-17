@@ -52,8 +52,8 @@ export const TOTAL_ROWS = 12;
 
 /** Lunch break — 1:20 PM to 2:00 PM at VIT Chennai (last morning period ends 13:20) */
 export const LUNCH = { start: t("13:20"), end: t("14:00") };
-/** "1:20 PM – 2:00 PM" — single source of truth for every lunch label */
-export const LUNCH_LABEL = `${fmtTime(LUNCH.start)} – ${fmtTime(LUNCH.end)}`;
+/** "1:20 PM - 2:00 PM" — single source of truth for every lunch label */
+export const LUNCH_LABEL = `${fmtTime(LUNCH.start)} - ${fmtTime(LUNCH.end)}`;
 /** Extra row for V3-V7 (Vellore) / S1-S4 (Chennai) evening classes */
 export const EXTRA_ROW = TOTAL_ROWS;
 
@@ -186,7 +186,7 @@ export function theorySlotToCells(meeting: Meeting, _campus: Campus = "chennai")
 /** Human readable meeting description e.g. "Mon 8:00-8:50" */
 export function meetingLabel(m: Meeting): string {
   const dayShort = { mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri" }[m.day];
-  return `${dayShort} ${fmtTime(m.start)}–${fmtTime(m.end)}`;
+  return `${dayShort} ${fmtTime(m.start)}-${fmtTime(m.end)}`;
 }
 
 /** All known theory slot codes for the slot view (Chennai campus) */

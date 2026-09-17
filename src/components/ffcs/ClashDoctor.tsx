@@ -29,12 +29,12 @@ interface ClashDoctorProps {
   onGoToGenerator: () => void;
 }
 
-/** "Mon 10:00 AM–10:50 AM · Wed 8:00 AM–8:50 AM" style label for overlapping windows */
+/** "Mon 10:00 AM-10:50 AM · Wed 8:00 AM-8:50 AM" style label for overlapping windows */
 function overlapLabel(meetings: ClashInfo["meetings"]): string {
   if (meetings.length === 0) return "";
   const byDay = new Map<Day, string[]>();
   for (const m of meetings) {
-    const label = `${fmtTime(m.start)}–${fmtTime(m.end)}`;
+    const label = `${fmtTime(m.start)}-${fmtTime(m.end)}`;
     (byDay.get(m.day) || byDay.set(m.day, []).get(m.day)!).push(label);
   }
   return [...byDay.entries()]

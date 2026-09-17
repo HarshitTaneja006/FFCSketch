@@ -87,7 +87,7 @@ export default function CoursePicker({ initialQuery = "", seedNonce = 0 }: Props
     );
   }, [isSlotQuery, slotQuery, type, credits]);
 
-  /** when the slot meets, e.g. "Mon 8:00 AM–8:50 AM · Wed 8:55 AM–9:45 AM" */
+  /** when the slot meets, e.g. "Mon 8:00 AM-8:50 AM · Wed 8:55 AM-9:45 AM" */
   const slotTimeLabel = useMemo(() => {
     if (!isSlotQuery) return "";
     return getSectionMeetings(slotQuery, campus).map(meetingLabel).join(" · ");

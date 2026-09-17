@@ -67,7 +67,7 @@ export function SlotFinderPopover({ cell, anchor, campus, onClose, onPick }: Pro
       <div className="flex items-start justify-between gap-2 mb-1.5">
         <div>
           <div className="font-bold" style={{ fontSize: "0.92rem" }}>
-            🔍 Free period — {DAY_LABELS[cell.day].slice(0, 3)} {fmtTime(start).replace(":00", "")}–
+            🔍 Free period — {DAY_LABELS[cell.day].slice(0, 3)} {fmtTime(start).replace(":00", "")}-
             {fmtTime(end).replace(":00", "")}
           </div>
           <div style={{ fontSize: "0.76rem", color: "var(--muted-ink)" }}>

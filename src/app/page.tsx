@@ -34,7 +34,7 @@ import { SlotFinderPopover } from "@/components/ffcs/SlotFinderPopover";
 import { CustomCourseDialog } from "@/components/ffcs/CustomCourseDialog";
 
 /** 🔗 Set this to the GitHub repository of your FFCSketch deployment. */
-const GITHUB_URL = "https://github.com/your-username/ffcs-sketch";
+const GITHUB_URL = "https://github.com/HarshitTaneja006/FFCSketch";
 
 type TabKey = "timetable" | "generator" | "compare" | "slots";
 

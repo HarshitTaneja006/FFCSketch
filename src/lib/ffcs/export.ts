@@ -241,7 +241,7 @@ export function timetableToText(
         meetings.push({
           start: m.start,
           end: m.end,
-          text: `${fmtHM(m.start)}–${fmtHM(m.end)}  ${e.code} ${typeLabel} (${e.slot}) · ${e.faculty}`,
+          text: `${fmtHM(m.start)}-${fmtHM(m.end)}  ${e.code} ${typeLabel} (${e.slot}) · ${e.faculty}`,
         });
       }
     }

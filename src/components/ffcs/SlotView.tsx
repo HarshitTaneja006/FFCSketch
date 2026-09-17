@@ -407,7 +407,7 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
                     {Array.from({ length: TOTAL_ROWS }, (_, p) => {
                       const { start, end } = labPeriodRange(p);
                       const th = (
-                        <th key={p} className="tt-time-h" title={`${fmtTime(start)} – ${fmtTime(end)}`}>
+                        <th key={p} className="tt-time-h" title={`${fmtTime(start)} - ${fmtTime(end)}`}>
                           <div>{fmtTimeShort(start)}</div>
                           <div style={{ opacity: 0.7 }}>{fmtTimeShort(end)}</div>
                         </th>
