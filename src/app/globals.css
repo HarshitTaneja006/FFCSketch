@@ -1,0 +1,1634 @@
+@import "tailwindcss";
+@import "./paper.css";
+@import "tw-animate-css";
+
+/* ------------------------------------------------------------------ */
+/* FFCSketch — paper theme (day) + chalkboard sketch (night)           */
+/* All surfaces reference variables so the theme flips in one class.   */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --ffcs-ink: #2d2926;
+  --ffcs-paper: #fdfbf7;
+  --ffcs-accent: #c0392b;
+
+  /* day palette */
+  --body: #f4f0e6;
+  --grid-line: rgba(160, 130, 80, 0.11);
+  --card: #fffef9;
+  --input: #ffffff;
+  --accent: #ffe08a;
+  --good: #c8f0d4;
+  --good-soft: #f2fbf0;
+  --good-strong: #1f6e3a;
+  --bad: #fdeceb;
+  --bad-soft: #fff5f4;
+  --danger: #c0392b;
+  --muted-ink: #6b6257;
+  --label-ink: #7a6f5d;
+  --on-accent: #2d2926;
+  --flex-bg: #fbf7ec;
+  --head-bg: #efe6cf;
+  --time-bg: #f7f1e1;
+  --lunch-a: #f3ead6;
+  --lunch-b: #efe4c8;
+  --scroll-thumb: #d8cbae;
+  --scroll-edge: #f4f0e6;
+  --shadow-ink: rgba(45, 41, 38, 0.18);
+  --shadow-strong: rgba(45, 41, 38, 0.8);
+
+  /* timetable block pastels */
+  --tt0: #ffe9a8; --tt1: #c8f0d4; --tt2: #f6cbd8; --tt3: #cfe6f7; --tt4: #e6d8f7;
+  --tt5: #ffe0c3; --tt6: #d5f0ea; --tt7: #f4f0b5; --tt8: #f7d3c4; --tt9: #dce8c8;
+  --tt-ink: rgba(45, 41, 38, 0.75);
+  --cell-border: rgba(45, 41, 38, 0.28);
+}
+
+html.night-sketch {
+  color-scheme: dark;
+  --ffcs-ink: #e6dfd0;
+  --ffcs-paper: #2e2a33;
+  --ffcs-accent: #ff8a7a;
+
+  --body: #201d26;
+  --grid-line: rgba(255, 255, 255, 0.055);
+  --card: #2b2732;
+  --input: #35303c;
+  --accent: #ffd766;
+  --good: #2f4f3b;
+  --good-soft: #24382b;
+  --good-strong: #7fd0a0;
+  --bad: #4d2e2c;
+  --bad-soft: #382524;
+  --danger: #ff8a7a;
+  --muted-ink: #b3a996;
+  --label-ink: #9a917f;
+  --on-accent: #463a12;
+  --flex-bg: #312d3a;
+  --head-bg: #37323f;
+  --time-bg: #322d3a;
+  --lunch-a: #322d3a;
+  --lunch-b: #2d2934;
+  --scroll-thumb: #4d4658;
+  --scroll-edge: #201d26;
+  --shadow-ink: rgba(0, 0, 0, 0.45);
+  --shadow-strong: rgba(0, 0, 0, 0.85);
+
+  --tt0: #4f463a; --tt1: #2f4f3b; --tt2: #53353f; --tt3: #2f4353; --tt4: #463a5c;
+  --tt5: #55402f; --tt6: #2c4a45; --tt7: #4c4930; --tt8: #553530; --tt9: #3d4a30;
+  --tt-ink: rgba(240, 232, 216, 0.8);
+  --cell-border: rgba(230, 223, 208, 0.22);
+
+  /* papercss internals follow the night palette too */
+  --main-background: #35303c;
+  --main-background-light: #4d4658;
+  --primary: #e6dfd0;
+  --primary-text: #e6dfd0;
+  --primary-light: #4d4658;
+  --primary-inverse: #2b2732;
+  --white: #35303c;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+.ffcs-body {
+  font-family: var(--font-neucha), "Comic Sans MS", "Segoe Print", cursive, sans-serif;
+  background-color: var(--body);
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, var(--grid-line) 28px),
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.08), transparent 46%),
+    radial-gradient(circle at 88% 92%, rgba(160, 130, 80, 0.13), transparent 52%);
+  color: var(--ffcs-ink);
+  letter-spacing: 0.01em;
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* papercss fixes: keep hand-drawn look, improve contrast on paper bg */
+.paper {
+  background: var(--ffcs-paper);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: 0.02em;
+}
+
+/* Tabs (papercss .tabs) — make them chunky and responsive */
+.paper-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  border: none !important;
+}
+.paper-tabs button {
+  position: relative;
+  border: 2px solid var(--ffcs-ink);
+  background: var(--card);
+  color: var(--ffcs-ink);
+  padding: 0.45rem 0.9rem;
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+.paper-tabs button:hover {
+  transform: translateY(-2px) rotate(-0.4deg);
+}
+.paper-tabs button.active {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 2px 3px 0 var(--shadow-strong);
+  font-weight: bold;
+}
+
+/* Timetable grid ---------------------------------------------------- */
+.tt-wrap {
+  overflow-x: auto;
+  border: 3px solid var(--ffcs-ink);
+  border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
+  background: var(--card);
+  box-shadow: 4px 5px 0 var(--shadow-ink);
+}
+
+table.tt {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 640px;
+  table-layout: fixed;
+}
+table.tt th,
+table.tt td {
+  border: 1.6px solid var(--cell-border);
+  padding: 0;
+  vertical-align: top;
+}
+table.tt thead th {
+  background: var(--head-bg);
+  font-size: 0.98rem;
+  padding: 6px 4px;
+  border-bottom: 2.5px solid var(--ffcs-ink);
+}
+table.tt .tt-time {
+  width: 76px;
+  min-width: 76px;
+  background: var(--time-bg);
+  font-size: 0.72rem;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--muted-ink);
+  padding: 3px 2px;
+}
+table.tt td.tt-cell {
+  height: 34px;
+  position: relative;
+}
+table.tt td.tt-lunch {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--lunch-a),
+    var(--lunch-a) 7px,
+    var(--lunch-b) 7px,
+    var(--lunch-b) 14px
+  );
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--label-ink);
+  padding: 4px;
+}
+
+/* course block colors (pastel, paper-friendly) */
+.tt-block {
+  margin: 2px;
+  height: calc(100% - 4px);
+  border: 2px solid var(--tt-ink);
+  border-radius: 6px 3px 7px 4px / 4px 7px 3px 6px;
+  padding: 2px 4px;
+  font-size: 0.72rem;
+  line-height: 1.18;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.1s ease;
+}
+.tt-block:hover {
+  transform: scale(1.03);
+  z-index: 5;
+  box-shadow: 2px 3px 0 var(--shadow-ink);
+}
+.tt-block .ttb-code {
+  font-weight: bold;
+  font-size: 0.74rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tt-block .ttb-fac {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.85;
+  font-size: 0.66rem;
+}
+.tt-block.is-clash {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(192, 57, 43, 0.28),
+    rgba(192, 57, 43, 0.28) 5px,
+    transparent 5px,
+    transparent 11px
+  );
+  border-color: var(--danger);
+  border-style: dashed;
+}
+.tt-0 { background: var(--tt0); }
+.tt-1 { background: var(--tt1); }
+.tt-2 { background: var(--tt2); }
+.tt-3 { background: var(--tt3); }
+.tt-4 { background: var(--tt4); }
+.tt-5 { background: var(--tt5); }
+.tt-6 { background: var(--tt6); }
+.tt-7 { background: var(--tt7); }
+.tt-8 { background: var(--tt8); }
+.tt-9 { background: var(--tt9); }
+
+/* scrollbar styling */
+.tt-wrap::-webkit-scrollbar,
+.ffcs-scroll::-webkit-scrollbar,
+.side-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.tt-wrap::-webkit-scrollbar-thumb,
+.ffcs-scroll::-webkit-scrollbar-thumb,
+.side-scroll::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+  border-radius: 8px;
+  border: 2px solid var(--scroll-edge);
+}
+.tt-wrap::-webkit-scrollbar-track,
+.ffcs-scroll::-webkit-scrollbar-track,
+.side-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* small caps section label */
+.ffcs-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--label-ink);
+  font-weight: bold;
+}
+
+/* hand-drawn underline for headers */
+.sketch-underline {
+  background-image: linear-gradient(transparent 62%, rgba(255, 214, 102, 0.85) 62%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+html.night-sketch .sketch-underline {
+  background-image: linear-gradient(transparent 62%, rgba(255, 215, 102, 0.5) 62%);
+}
+
+/* badges row */
+.chip {
+  display: inline-block;
+  border: 1.8px solid var(--ffcs-ink);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 1px 9px;
+  font-size: 0.78rem;
+  background: var(--card);
+  color: var(--ffcs-ink);
+  margin: 2px;
+  white-space: nowrap;
+}
+.chip.active {
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 1.5px 2px 0 var(--shadow-strong);
+}
+.chip.clickable {
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.chip.clickable:hover {
+  transform: translateY(-1.5px);
+}
+
+/* clash warning stripe */
+.clash-note {
+  border: 2.5px dashed var(--danger);
+  border-radius: 10px 5px 12px 6px / 6px 12px 5px 10px;
+  background: var(--bad);
+  padding: 0.55rem 0.8rem;
+  color: var(--danger);
+}
+
+/* stat cards */
+.stat-card {
+  border: 2.5px solid var(--ffcs-ink);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: var(--card);
+  padding: 0.7rem 0.9rem;
+  box-shadow: 3px 4px 0 var(--shadow-ink);
+  min-width: 0;
+}
+.stat-card .stat-value {
+  font-size: 1.45rem;
+  font-weight: bold;
+  line-height: 1.1;
+  color: var(--good-strong);
+}
+html.night-sketch .stat-card .stat-value {
+  color: #9fd8b4;
+}
+.stat-card .stat-label {
+  font-size: 0.78rem;
+  color: var(--muted-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* generator combo card */
+.combo-card {
+  border: 2.5px solid var(--ffcs-ink);
+  border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
+  background: var(--card);
+  box-shadow: 3px 4px 0 var(--shadow-ink);
+  transition: transform 0.12s ease;
+}
+.combo-card:hover {
+  transform: translateY(-2px) rotate(-0.2deg);
+  box-shadow: 4px 6px 0 var(--shadow-ink);
+}
+.combo-card.best {
+  background: var(--good-soft);
+  border-color: var(--good-strong);
+}
+
+/* priority arrow buttons */
+.prio-btn {
+  border: 2px solid var(--ffcs-ink);
+  background: var(--input);
+  color: var(--ffcs-ink);
+  border-radius: 6px 3px 7px 4px;
+  width: 26px;
+  height: 26px;
+  line-height: 1;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.prio-btn:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* sticky footer layout */
+.ffcs-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.ffcs-root main {
+  flex: 1 0 auto;
+}
+.ffcs-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ------------------------------------------------------------------ */
+/* Round 2 polish: popover, tape, animations, focus rings              */
+/* ------------------------------------------------------------------ */
+
+/* block popover */
+.ffcs-popover {
+  position: fixed;
+  z-index: 900;
+  background: var(--card);
+  border: 3px solid var(--ffcs-ink);
+  border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
+  box-shadow: 5px 6px 0 var(--shadow-ink);
+  padding: 12px;
+  animation: pop-in 0.14s ease-out;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  color: var(--ffcs-ink);
+}
+@keyframes pop-in {
+  0% { transform: scale(0.92) translateY(6px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 1px;
+  line-height: 1;
+  transition: transform 0.1s ease;
+}
+.star-btn:hover {
+  transform: scale(1.2) rotate(-6deg);
+}
+
+/* washi-tape decoration on section cards */
+.taped {
+  position: relative;
+}
+.taped::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 88px;
+  height: 20px;
+  background: rgba(255, 224, 138, 0.75);
+  border-left: 2px dashed rgba(45, 41, 38, 0.22);
+  border-right: 2px dashed rgba(45, 41, 38, 0.22);
+  z-index: 3;
+  pointer-events: none;
+}
+html.night-sketch .taped::before {
+  background: rgba(255, 215, 102, 0.4);
+}
+.taped.taped-r::before {
+  left: auto;
+  right: 14%;
+  transform: rotate(3deg);
+}
+
+/* stat cards wiggle on hover */
+.stat-card:hover {
+  transform: rotate(-0.6deg) translateY(-2px);
+  transition: transform 0.15s ease;
+}
+
+/* tabs wiggle when active */
+.paper-tabs button.active {
+  animation: tab-settle 0.18s ease-out;
+}
+@keyframes tab-settle {
+  0% { transform: rotate(1.2deg) scale(0.97); }
+  60% { transform: rotate(-0.8deg) scale(1.02); }
+  100% { transform: rotate(0) scale(1); }
+}
+
+/* sketchy focus rings everywhere */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+.tt-block:focus-visible {
+  outline: 2.5px dashed #b08a2e;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* empty-state doodle */
+.empty-doodle {
+  font-size: 1.9rem;
+  display: block;
+  margin-bottom: 4px;
+  animation: doodle-bob 2.6s ease-in-out infinite;
+}
+@keyframes doodle-bob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-4px) rotate(2deg); }
+}
+
+/* timetable wrapped like a pinned sheet */
+.tt-sheet {
+  position: relative;
+  background: var(--card);
+  padding: 14px;
+  border-radius: 10px;
+}
+.tt-sheet::before {
+  content: "";
+  position: absolute;
+  top: -11px;
+  left: 34px;
+  width: 96px;
+  height: 22px;
+  background: rgba(246, 203, 216, 0.7);
+  transform: rotate(-2.5deg);
+  border-left: 2px dashed rgba(45, 41, 38, 0.2);
+  border-right: 2px dashed rgba(45, 41, 38, 0.2);
+  z-index: 3;
+  pointer-events: none;
+}
+.tt-sheet::after {
+  content: "";
+  position: absolute;
+  top: -11px;
+  right: 40px;
+  width: 96px;
+  height: 22px;
+  background: rgba(200, 240, 212, 0.75);
+  transform: rotate(2deg);
+  border-left: 2px dashed rgba(45, 41, 38, 0.2);
+  border-right: 2px dashed rgba(45, 41, 38, 0.2);
+  z-index: 3;
+  pointer-events: none;
+}
+html.night-sketch .tt-sheet::before {
+  background: rgba(246, 203, 216, 0.28);
+}
+html.night-sketch .tt-sheet::after {
+  background: rgba(200, 240, 212, 0.3);
+}
+
+/* combo best ribbon */
+.combo-card.best::after {
+  content: "★ top pick";
+  position: absolute;
+  top: -11px;
+  right: 18px;
+  background: var(--good-strong);
+  color: #1c2b1f;
+  font-size: 0.66rem;
+  padding: 2px 10px;
+  border: 2px solid var(--ffcs-ink);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  transform: rotate(2deg);
+}
+.combo-card.best {
+  position: relative;
+}
+
+/* swap rows in popover hover */
+.swap-row:hover:not(:disabled) {
+  transform: translateX(2px);
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+}
+.swap-row {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+/* ------------------------------------------------------------------ */
+/* Round 3: night theme extras + doodle polish                         */
+/* ------------------------------------------------------------------ */
+
+/* theme toggle button */
+.theme-btn {
+  border: 2px solid var(--ffcs-ink);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: var(--accent);
+  color: var(--on-accent);
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.25s ease;
+  padding: 0;
+}
+.theme-btn svg {
+  min-width: 16px;
+  min-height: 16px;
+}
+.theme-btn:hover {
+  transform: rotate(24deg) scale(1.08);
+}
+
+/* doodle arrow hinting at the tabs */
+.doodle-hint {
+  position: relative;
+  user-select: none;
+}
+.doodle-hint::after {
+  content: "↙ pick a tab!";
+  position: absolute;
+  left: -8px;
+  top: -18px;
+  font-size: 0.72rem;
+  color: var(--label-ink);
+  transform: rotate(-6deg);
+  animation: doodle-bob 3.2s ease-in-out infinite;
+  pointer-events: none;
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .doodle-hint::after { display: none; }
+}
+
+/* corner fold on paper cards */
+.corner-fold {
+  position: relative;
+  overflow: hidden;
+}
+.corner-fold::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-style: solid;
+  border-width: 0 26px 26px 0;
+  border-color: transparent var(--body) transparent transparent;
+  filter: drop-shadow(-2px 2px 0 rgba(45, 41, 38, 0.18));
+  transition: border-color 0.35s ease;
+}
+
+/* inputs / selects follow the palette (papercss overrides) */
+.ffcs-body input,
+.ffcs-body select,
+.ffcs-body textarea {
+  background: var(--input);
+  color: var(--ffcs-ink);
+  border-color: var(--ffcs-ink);
+  font-family: inherit;
+}
+.ffcs-body input::placeholder {
+  color: var(--label-ink);
+  opacity: 0.85;
+}
+
+/* papercss button night + day alignment */
+.ffcs-body .btn {
+  font-family: inherit;
+  border-color: var(--ffcs-ink);
+  color: var(--ffcs-ink);
+}
+.ffcs-body a {
+  color: var(--ffcs-ink);
+}
+html.night-sketch .ffcs-body a {
+  color: #9fc7e8;
+}
+
+/* night adjustments for papercss internals that ship fixed colors
+   (no !important — inline var() styles from components must win) */
+html.night-sketch .ffcs-body table,
+html.night-sketch .ffcs-body details,
+html.night-sketch .ffcs-body summary {
+  color: var(--ffcs-ink);
+}
+html.night-sketch .ffcs-body details {
+  background: var(--card);
+}
+
+/* compare view select arrows on night */
+html.night-sketch select {
+  background-image: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* Round 4: color picker, undo chip, free-cell finder, print, extras   */
+/* ------------------------------------------------------------------ */
+
+/* crayon swatches (per-course color picker) */
+.swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50% 42% 55% 45%;
+  border: 2px solid var(--tt-ink);
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tt-ink);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.swatch:hover {
+  transform: scale(1.18) rotate(-8deg);
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+}
+.swatch.picked {
+  outline: 2.5px dashed var(--ffcs-ink);
+  outline-offset: 1.5px;
+}
+.swatch-auto {
+  background: var(--card);
+  border-style: dashed;
+  opacity: 0.8;
+}
+.swatch-auto:hover {
+  opacity: 1;
+}
+
+/* floating undo chip (bottom-left, auto-hides) */
+.undo-chip {
+  position: fixed;
+  left: 14px;
+  bottom: 64px;
+  z-index: 850;
+  border: 2.5px solid var(--ffcs-ink);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: inherit;
+  font-size: 0.84rem;
+  padding: 7px 14px;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 3px 4px 0 var(--shadow-strong);
+  cursor: pointer;
+  animation: pop-in 0.18s ease-out;
+  max-width: min(92vw, 380px);
+  text-align: left;
+}
+.undo-chip strong {
+  background: var(--card);
+  color: var(--ffcs-ink);
+  border: 1.6px solid var(--ffcs-ink);
+  border-radius: 8px 4px 9px 5px;
+  padding: 0 7px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+.undo-chip:hover {
+  transform: translateY(-2px) rotate(-0.6deg);
+}
+
+/* empty timetable cells: "what fits here?" affordance */
+td.tt-empty {
+  cursor: pointer;
+  position: relative;
+}
+td.tt-empty::after {
+  content: "+";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  color: var(--label-ink);
+  opacity: 0.18;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  pointer-events: none;
+}
+td.tt-empty:hover {
+  background:
+    radial-gradient(circle at 50% 50%, var(--flex-bg), transparent 78%);
+}
+td.tt-empty:hover::after {
+  opacity: 0.75;
+  transform: scale(1.25) rotate(90deg);
+}
+
+/* slot finder chips */
+.slotfinder-chip {
+  font-size: 0.8rem;
+  border-width: 2px;
+}
+
+/* pencil marker stripe on the left edge of blocks */
+.tt-block::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 3px;
+  background: rgba(45, 41, 38, 0.16);
+  pointer-events: none;
+}
+html.night-sketch .tt-block::before {
+  background: rgba(240, 232, 216, 0.18);
+}
+
+/* coffee stain doodle on the footer */
+.ffcs-footer {
+  position: relative;
+  overflow: hidden;
+}
+.ffcs-footer::before {
+  content: "";
+  position: absolute;
+  right: 6%;
+  top: 2px;
+  width: 72px;
+  height: 58px;
+  border-radius: 50% 46% 52% 48%;
+  background: radial-gradient(
+    ellipse at 42% 40%,
+    rgba(139, 94, 50, 0.12),
+    rgba(139, 94, 50, 0.05) 58%,
+    transparent 72%
+  );
+  border: 2.5px solid rgba(139, 94, 50, 0.1);
+  transform: rotate(-14deg);
+  pointer-events: none;
+}
+.ffcs-footer::after {
+  content: "☕";
+  position: absolute;
+  right: calc(6% + 74px);
+  top: 6px;
+  font-size: 0.9rem;
+  opacity: 0.5;
+  transform: rotate(10deg);
+  pointer-events: none;
+}
+@media (max-width: 900px) {
+  .ffcs-footer::before, .ffcs-footer::after { display: none; }
+}
+
+/* ------------------------------------------------------------------ */
+/* v1.4 — QR share, pinned sections                                    */
+/* ------------------------------------------------------------------ */
+
+/* rotated "NEW!" sticker on the Faculty tab */
+.new-tab-sticker {
+  position: absolute;
+  top: -11px;
+  right: -8px;
+  font-size: 0.58rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  background: var(--danger);
+  color: #fff;
+  border: 2px solid var(--ffcs-ink);
+  border-radius: 8px 3px 9px 4px;
+  transform: rotate(9deg);
+  pointer-events: none;
+  animation: sticker-wiggle 2.8s ease-in-out infinite;
+  box-shadow: 1px 2px 0 var(--shadow-ink);
+}
+@keyframes sticker-wiggle {
+  0%, 100% { transform: rotate(9deg) scale(1); }
+  50% { transform: rotate(5deg) scale(1.06); }
+}
+
+/* "★ loved" sticker for top-rated faculty */
+.loved-sticker {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  font-size: 0.62rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  background: var(--good);
+  color: var(--ffcs-ink);
+  border: 2px solid var(--ffcs-ink);
+  border-radius: 10px 4px 12px 5px;
+  transform: rotate(4deg);
+  pointer-events: none;
+  box-shadow: 1px 2px 0 var(--shadow-ink);
+}
+
+/* faculty card hover — slight lift like a page being flipped */
+.faculty-card {
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+}
+.faculty-card:hover {
+  transform: translateY(-2px) rotate(-0.35deg);
+  box-shadow: 3px 5px 0 var(--shadow-ink);
+}
+
+/* faculty rating stars pulse gently on hover */
+.faculty-stars:hover {
+  transform: rotate(-2deg) scale(1.05);
+  transition: transform 0.12s ease;
+}
+
+/* pinned-section rows in combos get a subtle highlight sweep */
+.combo-card .chip {
+  transition: transform 0.12s ease;
+}
+.combo-card .chip:hover {
+  transform: translateY(-1px);
+}
+
+/* QR frame — faint corner doodles */
+.qr-frame {
+  position: relative;
+}
+.qr-frame::after {
+  content: "⌁";
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  color: var(--label-ink);
+  font-size: 0.8rem;
+  transform: rotate(12deg);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* wishlist sparkle button pop */
+.prio-btn:active {
+  transform: scale(0.92);
+}
+
+/* ------------------------------------------------------------------ */
+/* rubber stamp on clash-free tables                                   */
+/* ------------------------------------------------------------------ */
+.stamp-clashfree {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--good-strong);
+  border: 3px double var(--good-strong);
+  border-radius: 7px 11px 8px 10px / 10px 8px 11px 7px;
+  padding: 2px 9px;
+  transform: rotate(-4deg);
+  opacity: 0.92;
+  animation: stamp-in 0.32s cubic-bezier(0.2, 1.6, 0.4, 1);
+  box-shadow: inset 0 0 6px rgba(31, 110, 58, 0.08);
+  white-space: nowrap;
+}
+@keyframes stamp-in {
+  0% { transform: scale(1.7) rotate(-15deg); opacity: 0; }
+  62% { transform: scale(0.94) rotate(-3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-4deg); }
+}
+
+/* keyboard shortcut chips */
+.kbd-chip {
+  display: inline-block;
+  font-family: var(--font-neucha), "Comic Sans MS", cursive;
+  font-size: 0.78rem;
+  font-weight: bold;
+  line-height: 1;
+  padding: 4px 8px;
+  background: var(--card);
+  color: var(--ffcs-ink);
+  border: 2px solid var(--ffcs-ink);
+  border-radius: 6px 3px 8px 4px / 4px 8px 3px 6px;
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+  white-space: nowrap;
+}
+
+/* dice button — tiny shake on hover, like rolling */
+.dice-btn:not(:disabled):hover {
+  animation: dice-shake 0.4s ease-in-out;
+}
+@keyframes dice-shake {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-5deg) scale(1.03); }
+  55% { transform: rotate(4deg) scale(1.04); }
+  80% { transform: rotate(-2deg); }
+}
+
+/* review rows in the moderation dialog */
+.review-row {
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.review-row:hover {
+  transform: translateX(2px);
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+}
+
+/* v1.5 style pass */
+
+/* v1.6 additions ----------------------------------------------------- */
+
+/* generator preference toggle chips */
+.pref-chip {
+  border: 2px solid var(--ffcs-ink);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  font-family: inherit;
+  font-size: 0.78rem;
+  padding: 5px 12px;
+  cursor: pointer;
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease, color 0.2s ease;
+}
+.pref-chip:hover {
+  transform: translateY(-1px) rotate(-0.6deg);
+  box-shadow: 2px 3px 0 var(--shadow-ink);
+}
+.pref-chip:active {
+  transform: translateY(1px);
+  box-shadow: 0.5px 1px 0 var(--shadow-ink);
+}
+
+/* checklist button — subtle stationery vibe */
+.checklist-btn:not(:disabled):hover {
+  background: var(--flex-bg) !important;
+  transform: translateX(1px);
+}
+.checklist-btn {
+  transition: transform 0.12s ease, background 0.2s ease;
+}
+
+/* friend-import strip wiggle when a plan just landed */
+@keyframes import-pop {
+  0% { transform: scale(0.96) rotate(-0.4deg); }
+  60% { transform: scale(1.01) rotate(0.3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* v1.7 additions ----------------------------------------------------- */
+
+/* explorer: "already in table" stamp + swap button */
+.in-table-stamp {
+  transform: rotate(-0.6deg);
+  transition: transform 0.15s ease;
+}
+.in-table-stamp:hover {
+  transform: rotate(0deg) scale(1.04);
+}
+.swap-btn {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.swap-btn:hover {
+  transform: rotate(180deg);
+  box-shadow: 2px 2.5px 0 var(--shadow-ink);
+}
+
+/* generator: big-wishlist amber note */
+.warn-strip {
+  border: 2px solid var(--accent);
+  border-radius: 10px 5px 12px 6px / 6px 12px 5px 10px;
+  background: color-mix(in srgb, var(--accent) 22%, var(--card));
+  color: var(--ffcs-ink);
+  font-size: 0.8rem;
+  padding: 7px 10px;
+}
+
+/* v1.8 additions ----------------------------------------------------- */
+
+/* slot reference: chips that the current table already occupies */
+.slot-used {
+  outline: 2.5px dashed var(--label-ink);
+  outline-offset: 1.5px;
+  position: relative;
+  transform: rotate(-2deg);
+  box-shadow: 2px 2px 0 var(--shadow-ink);
+}
+button.slot-used:hover {
+  transform: rotate(0deg) scale(1.08);
+  box-shadow: 3px 3px 0 var(--shadow-ink);
+}
+.slot-used::after {
+  content: "✏";
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  font-size: 0.62rem;
+  color: var(--label-ink);
+  pointer-events: none;
+  transform: rotate(8deg);
+}
+
+/* community voices: sort + filter chips */
+.voice-sort-chip {
+  font-family: inherit;
+  font-size: 0.74rem;
+  padding: 2px 9px;
+  border: 2px solid var(--cell-border);
+  border-radius: 255px 12px 225px 12px / 12px 225px 12px 255px;
+  background: var(--input);
+  color: var(--ffcs-ink);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+.voice-sort-chip:hover {
+  transform: translateY(-1.5px) rotate(-1deg);
+  border-color: var(--label-ink);
+}
+.voice-sort-chip.sel {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--ffcs-ink);
+  transform: rotate(-1.5deg);
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+}
+
+/* share dialog: copy-as-text section */
+.text-share-btn {
+  width: 100%;
+  justify-content: center;
+  font-size: 0.9rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+  background: var(--card);
+  color: var(--ffcs-ink);
+}
+.text-share-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--good) 30%, transparent);
+  transform: translateX(-101%);
+  transition: transform 0.25s ease;
+}
+.text-share-btn:hover::before {
+  transform: translateX(0);
+}
+.text-share-btn:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 2px 3px 0 var(--shadow-ink);
+}
+.text-share-btn.done {
+  background: var(--good);
+  border-color: var(--good-strong);
+  animation: text-pop 0.35s ease;
+}
+@keyframes text-pop {
+  0% { transform: scale(0.94); }
+  55% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* v1.9 additions ----------------------------------------------------- */
+
+/* BUGFIX: papercss ships h2 { font-size: 3rem }+ which out-cascades the
+   Tailwind text-xl utility — the timetable title rendered ~60px and clipped
+   on mobile. Scope headings back to hand-drawn-sheet sizes. */
+main h2 {
+  font-size: 1.45rem;
+  line-height: 1.3;
+  font-family: inherit;
+}
+
+/* clash doctor panel */
+.doctor-sticker {
+  position: absolute;
+  top: -12px;
+  right: 18px;
+  background: var(--danger);
+  color: #fffef9;
+  font-size: 0.72rem;
+  font-weight: bold;
+  padding: 2px 10px;
+  border: 2px solid var(--ffcs-ink);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  transform: rotate(3deg);
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+  animation: sticker-wiggle 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.doctor-pulse {
+  animation: doctor-pulse 1.6s ease-in-out infinite;
+}
+@keyframes doctor-pulse {
+  0%, 100% { transform: scale(1) rotate(-4deg); }
+  50% { transform: scale(1.18) rotate(5deg); }
+}
+.clash-row {
+  border-top: 2px dashed color-mix(in srgb, var(--danger) 45%, transparent);
+  padding: 7px 2px 6px;
+  transition: background 0.15s ease;
+}
+.clash-row:first-of-type {
+  border-top: none;
+}
+.clash-row:hover {
+  background: color-mix(in srgb, var(--bad) 8%, transparent);
+}
+.clash-zap {
+  animation: doctor-pulse 1.2s ease-in-out infinite;
+  display: inline-block;
+}
+.fix-chip {
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 2px 9px;
+  border: 2px solid var(--good-strong);
+  border-radius: 255px 12px 225px 12px / 12px 225px 12px 255px;
+  background: var(--card);
+  color: var(--ffcs-ink);
+  cursor: pointer;
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease, color 0.15s ease;
+}
+.fix-chip:hover {
+  transform: translateY(-1.5px) rotate(-1deg);
+  box-shadow: 2px 3px 0 var(--shadow-ink);
+  background: var(--good);
+  color: var(--card);
+}
+.fix-chip:active {
+  transform: translateY(1px);
+  box-shadow: 0.5px 1px 0 var(--shadow-ink);
+}
+.fix-chip.fix-remove {
+  border-color: var(--danger);
+  background: var(--bad-soft);
+  padding: 2px 6px;
+}
+.fix-chip.fix-remove:hover {
+  background: var(--bad);
+  color: var(--card);
+}
+.fix-chip.fix-gen {
+  border-style: dashed;
+  border-color: var(--ffcs-ink);
+  background: var(--flex-bg);
+}
+.fix-chip.fix-gen:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.no-alt-chip {
+  font-size: 0.72rem;
+  color: var(--label-ink);
+  border: 1.5px dashed var(--label-ink);
+  border-radius: 8px 4px 10px 5px;
+  padding: 1px 7px;
+  opacity: 0.85;
+}
+
+/* faculty weekly footprint mini grid */
+.mini-grid {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+  position: relative;
+}
+.mini-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.mini-day-strip {
+  position: relative;
+  width: 13px;
+  height: 46px;
+  border: 1.5px solid var(--cell-border);
+  border-radius: 4px 2px 5px 3px;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 11px,
+      color-mix(in srgb, var(--label-ink) 14%, transparent) 11px,
+      color-mix(in srgb, var(--label-ink) 14%, transparent) 12px
+    ),
+    var(--input);
+  overflow: hidden;
+}
+.mini-lunch {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* lunch = 12:50–14:00 within the 8:00–20:00 window */
+  top: 40.3%;
+  height: 9.7%;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.mini-busy {
+  position: absolute;
+  left: 1.5px;
+  right: 1.5px;
+  border-radius: 3px 2px 4px 2px;
+  background: var(--accent);
+  border: 1px solid var(--ffcs-ink);
+  transition: transform 0.12s ease, filter 0.12s ease;
+  cursor: default;
+}
+.mini-busy:hover {
+  filter: saturate(1.5) brightness(1.06);
+  transform: scaleX(1.22);
+  z-index: 2;
+}
+.mini-day-label {
+  font-size: 0.58rem;
+  color: var(--label-ink);
+  font-family: inherit;
+}
+.mini-day-label.on {
+  color: var(--ffcs-ink);
+  font-weight: bold;
+}
+.mini-empty {
+  font-size: 0.7rem;
+  color: var(--label-ink);
+  font-style: italic;
+}
+
+/* generator: import-current-table chip */
+.import-table-chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: inherit;
+  font-size: 0.78rem;
+  padding: 4px 12px;
+  margin-bottom: 10px;
+  border: 2px dashed var(--ffcs-ink);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: var(--card);
+  color: var(--ffcs-ink);
+  cursor: pointer;
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+  transition: transform 0.12s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.12s ease;
+}
+.import-table-chip:hover {
+  transform: translateY(-1.5px) rotate(-0.5deg);
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 2px 3px 0 var(--shadow-ink);
+}
+.import-table-chip:active {
+  transform: translateY(1px);
+  box-shadow: 0.5px 1px 0 var(--shadow-ink);
+}
+
+/* v2.0 additions ----------------------------------------------------- */
+
+/* Slot View — conflict cell (two+ picked slots in one period) */
+.slotview-conflict {
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      rgba(192, 57, 43, 0.14),
+      rgba(192, 57, 43, 0.14) 5px,
+      transparent 5px,
+      transparent 11px
+    ) !important;
+  outline: 2.5px dashed var(--danger);
+  outline-offset: -3px;
+}
+
+/* ghost "peek" blocks — pencil-in previews from the Generator */
+.tt-block.ghost {
+  border-style: dashed !important;
+  opacity: 0.62;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 4px,
+    color-mix(in srgb, var(--ffcs-ink) 7%, transparent) 4px,
+    color-mix(in srgb, var(--ffcs-ink) 7%, transparent) 8px
+  );
+  pointer-events: none;
+  box-shadow: none;
+  animation: ghost-breathe 2.2s ease-in-out infinite;
+}
+@keyframes ghost-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.75; }
+}
+.tt-block.ghost::after {
+  content: "👻";
+  position: absolute;
+  top: -8px;
+  right: 2px;
+  font-size: 0.62rem;
+  pointer-events: none;
+}
+.ghost-legend-chip {
+  border-style: dashed;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 4px,
+    color-mix(in srgb, var(--ffcs-ink) 6%, transparent) 4px,
+    color-mix(in srgb, var(--ffcs-ink) 6%, transparent) 8px
+  );
+  animation: ghost-breathe 2.2s ease-in-out infinite;
+}
+
+/* peek banner above the grid */
+.peek-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border: 2.5px dashed var(--ffcs-ink);
+  border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
+  background: color-mix(in srgb, var(--accent) 26%, var(--card));
+  box-shadow: 3px 4px 0 var(--shadow-ink);
+  padding: 8px 12px;
+  font-size: 0.86rem;
+  animation: peek-in 0.25s ease;
+}
+@keyframes peek-in {
+  0% { transform: translateY(-5px) scale(0.98); opacity: 0; }
+  60% { transform: translateY(1px) scale(1.01); }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.peek-ghost {
+  font-size: 1.35rem;
+  display: inline-block;
+  animation: doodle-bob 2.4s ease-in-out infinite;
+}
+.peek-banner .chip.clickable {
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.peek-banner .chip.clickable:hover {
+  transform: translateY(-1.5px) rotate(-1deg);
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+}
+
+/* generator: auto-fit wishlist button */
+.autofit-btn {
+  display: inline-flex;
+  align-items: center;
+  font-family: inherit;
+  font-size: 0.78rem;
+  padding: 4px 12px;
+  margin: 0 0 10px 8px;
+  border: 2px dashed var(--good-strong);
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  background: var(--good-soft);
+  color: var(--ffcs-ink);
+  cursor: pointer;
+  box-shadow: 1.5px 2px 0 var(--shadow-ink);
+  transition: transform 0.12s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.12s ease;
+}
+.autofit-btn:hover:not(:disabled) {
+  transform: translateY(-1.5px) rotate(0.5deg);
+  background: var(--good);
+  color: var(--card);
+  box-shadow: 2px 3px 0 var(--shadow-ink);
+}
+.autofit-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0.5px 1px 0 var(--shadow-ink);
+}
+.autofit-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* generator combo: peek button micro-interaction */
+.peek-btn {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.peek-btn:hover {
+  transform: rotate(-1deg) translateY(-1.5px);
+  box-shadow: 2px 2.5px 0 var(--shadow-ink);
+  background: var(--flex-bg) !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* v2.1 — horizontal timetable, orientation toggle, cart cards, xlsx   */
+/* ------------------------------------------------------------------ */
+
+/* horizontal orientation: days down the side, periods across the top.
+   v2.2: table-layout fixed + width 100% — fits the page width with NO
+   horizontal scrolling on desktop; keeps a 640px internal scroll floor on
+   phones (inside .tt-wrap, the page itself never scrolls sideways). */
+table.tt.tt-horizontal {
+  min-width: 640px;
+}
+table.tt.tt-horizontal thead th {
+  padding: 4px 2px;
+}
+.tt-time-h {
+  min-width: 0;
+  font-size: 0.62rem;
+  line-height: 1.25;
+  text-align: center;
+  font-weight: normal;
+  color: var(--muted-ink);
+  background: var(--time-bg);
+}
+table.tt th.tt-day-col {
+  width: 78px;
+  min-width: 78px;
+  max-width: 78px;
+  background: var(--time-bg);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 6px 4px;
+  color: var(--ffcs-ink);
+  border-bottom: 1.6px solid var(--cell-border);
+}
+/* lunch as a narrow vertical strip between morning and afternoon columns */
+table.tt .tt-lunch-h {
+  width: 22px;
+  min-width: 22px;
+  max-width: 22px;
+  padding: 0;
+}
+table.tt thead th.tt-lunch-h .tt-lunch-label {
+  display: inline-block;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  font-size: 0.56rem;
+  letter-spacing: 0.8px;
+  color: var(--label-ink);
+}
+table.tt td.tt-lunch-h {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 0.72rem;
+}
+
+/* orientation segmented toggle (vertical | horizontal) */
+.ori-btn {
+  font-family: inherit;
+  font-size: 0.72rem;
+  padding: 2.5px 10px;
+  border: none;
+  background: transparent;
+  color: var(--ffcs-ink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+.ori-btn:hover {
+  background: var(--flex-bg);
+}
+.ori-btn:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: -3px;
+}
+.ori-btn + .ori-btn {
+  border-left: 2px solid var(--ffcs-ink);
+}
+
+/* course list cards (CourseCart) — delete always visible, no h-scroll */
+.cart-card:hover {
+  transform: translateY(-1px) rotate(-0.25deg);
+  box-shadow: 2.5px 3px 0 var(--shadow-ink);
+}
+
+/* xlsx dropzone keyboard focus */
+.xlsx-drop:focus-visible {
+  outline: 2.5px dashed var(--accent);
+  outline-offset: 2px;
+}
+
+/* text-overflow safety net: long words wrap instead of blowing out cards */
+.ffcs-root,
+.ffcs-root .chip,
+.ffcs-root .ffcs-label,
+.ffcs-root p,
+.ffcs-root td,
+.ffcs-root th,
+.ffcs-root .clash-note,
+.ffcs-root .peek-banner {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+.ffcs-root .chip {
+  max-width: 100%;
+}
+/* long worded labels inside table cells may wrap (blocks already ellipsis) */
+.ffcs-root td.chip-cell {
+  white-space: normal;
+}
+
+/* prio-btn variant for text labels (icon-only buttons keep the fixed 26px) */
+/* used by picker header (xlsx / custom course) and SlotView (load my table / clear) */
+.prio-btn.wide {
+  width: auto;
+  min-width: 26px;
+  padding: 0 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+}
+
+/* grid blowout guard — grid items must be allowed to shrink so inner
+   scrollers (.tt-wrap, .ffcs-scroll) actually scroll instead of stretching
+   the page (the root cause of mobile text overflow).
+   Without min-width:0 a grid child's intrinsic min-content width
+   (e.g. the 640/1080px timetable table) forces the column wide. */
+.ffcs-root .grid > * {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* v2.2 — empty-cell slot hints, horizontal fit polish                 */
+/* ------------------------------------------------------------------ */
+
+/* faint pencil-hint slot code shown inside every free timetable cell
+   ("A1" / "L3" / "A1 · L3") — tells students which slot is free there */
+.tt-empty-slot {
+  min-height: 30px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--label-ink);
+  opacity: 0.55;
+  overflow-wrap: anywhere;
+  padding: 1px 2px;
+  user-select: none;
+}
+.tt-empty:hover .tt-empty-slot {
+  opacity: 0.9;
+  color: var(--accent-strong, var(--ffcs-ink));
+}
+
+/* horizontal mode: squeeze block text so 12 period columns stay readable */
+table.tt.tt-horizontal .tt-block {
+  font-size: 0.62rem;
+  line-height: 1.12;
+  padding: 1.5px 3px;
+}
+table.tt.tt-horizontal .ttb-code {
+  font-size: 0.64rem;
+}
+table.tt.tt-horizontal .ttb-fac {
+  font-size: 0.56rem;
+}
+

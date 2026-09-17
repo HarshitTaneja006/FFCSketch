@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Offline — FFCSketch</title>
+<link rel="icon" href="/icon-192.png" />
+<style>
+  :root {
+    --ink: #2d2926;
+    --paper: #fffef9;
+    --body: #f4f0e6;
+    --accent: #ffe08a;
+    --danger: #c0392b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Comic Sans MS", "Segoe Print", "Bradley Hand", cursive, sans-serif;
+    color: var(--ink);
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(160,130,80,0.11) 28px),
+      var(--body);
+    padding: 24px;
+  }
+  .sheet {
+    max-width: 480px;
+    width: 100%;
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 12px 6px 14px 8px / 8px 14px 6px 12px;
+    box-shadow: 4px 5px 0 rgba(45,41,38,0.25);
+    padding: 28px 26px;
+    position: relative;
+    transform: rotate(-0.5deg);
+  }
+  .tape {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-2deg);
+    width: 96px;
+    height: 22px;
+    background: rgba(255, 224, 138, 0.8);
+    border-left: 2px dashed rgba(45,41,38,0.22);
+    border-right: 2px dashed rgba(45,41,38,0.22);
+  }
+  h1 { font-size: 1.6rem; margin: 6px 0 4px; }
+  .doodle { font-size: 2.6rem; display: inline-block; animation: bob 2.6s ease-in-out infinite; }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-5px) rotate(3deg); }
+  }
+  p { line-height: 1.55; font-size: 0.98rem; margin: 8px 0; }
+  .tip {
+    border: 2px dashed var(--ink);
+    border-radius: 10px 5px 12px 6px;
+    padding: 10px 12px;
+    background: var(--accent);
+    font-size: 0.88rem;
+    margin-top: 14px;
+  }
+  a.btn {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 8px 18px;
+    border: 2.5px solid var(--ink);
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    background: var(--accent);
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 2px 3px 0 rgba(45,41,38,0.3);
+    transition: transform 0.12s ease;
+  }
+  a.btn:hover { transform: translateY(-2px) rotate(-1deg); }
+  .stamp {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    border: 2.5px solid var(--danger);
+    color: var(--danger);
+    border-radius: 8px 5px 10px 6px;
+    padding: 2px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transform: rotate(6deg);
+    opacity: 0.85;
+  }
+</style>
+</head>
+<body>
+  <main class="sheet">
+    <span class="tape" aria-hidden="true"></span>
+    <span class="stamp" aria-hidden="true">OFFLINE</span>
+    <span class="doodle" aria-hidden="true">✏️</span>
+    <h1>You&apos;re off the grid!</h1>
+    <p>
+      No internet right now — but don&apos;t worry: <strong>your timetables live in this
+      browser</strong>, so nothing was lost. Sketches will be waiting the moment you&apos;re back online.
+    </p>
+    <div class="tip">
+      💡 Everything you saved (tables, wishlist, colors) is kept on this device —
+      reconnect and hit reload to continue planning.
+    </div>
+    <a class="btn" href="/">↻ Try again</a>
+  </main>
+</body>
+</html>
