@@ -111,6 +111,15 @@ body {
   background: var(--ffcs-paper);
 }
 
+/* PaperCSS and Tailwind both set generic SVG display rules. Normalize icons
+   inside controls so Lucide SVGs keep their size and inherit button contrast. */
+.ffcs-root button > svg {
+  display: inline-block;
+  flex: 0 0 auto;
+  color: inherit;
+  vertical-align: middle;
+}
+
 h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.02em;
 }
