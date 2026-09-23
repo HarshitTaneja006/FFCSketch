@@ -1650,3 +1650,30 @@ html.theme-fun .ffcs-body .theme-switch:hover {
   transform: none;
   box-shadow: none;
 }
+
+html.theme-fun .ffcs-body .theme-intro-fun {
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 2px solid var(--ffcs-ink);
+  border-radius: 9px 5px 11px 6px;
+  box-shadow: 2px 3px 0 var(--shadow-ink);
+  font-family: inherit;
+  font-weight: 700;
+}
+html.theme-fun .ffcs-body .theme-intro-fun:hover {
+  transform: translateY(-2px);
+}
+html.theme-fun .ffcs-body .theme-intro-nerd {
+  background: #e6e7e9;
+  color: #34383d;
+  border: 1px solid #9da3aa;
+  border-radius: 4px;
+  box-shadow: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+}
+html.theme-fun .ffcs-body .theme-intro-nerd:hover {
+  background: #d5d7d9;
+  transform: none;
+  box-shadow: none;
+}

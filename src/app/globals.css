@@ -7,6 +7,10 @@ html, body {
   min-height: 100%;
 }
 
+.theme-switch-wrap {
+  position: relative;
+}
+
 .theme-switch {
   display: inline-flex;
   align-items: center;
@@ -19,6 +23,45 @@ html, body {
   font-size: 0.8rem;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.theme-intro {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 210;
+  width: min(330px, calc(100vw - 24px));
+  padding: 16px;
+  background: var(--card);
+  color: var(--ffcs-ink);
+  border: 2px solid var(--ffcs-ink);
+  border-radius: 10px;
+  box-shadow: 4px 5px 0 var(--shadow-ink);
+}
+
+.theme-intro-title {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.theme-intro-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.theme-intro-actions button {
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+@media (max-width: 520px) {
+  .theme-switch-wrap { width: 100%; }
+  .theme-intro { left: 0; right: auto; }
 }
 
 /* Shared accessibility behavior across both visual themes. */

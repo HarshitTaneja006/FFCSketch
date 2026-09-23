@@ -49,7 +49,20 @@ export default function AppHeader({ onExportImage, onShare }: Props) {
   const [renameValue, setRenameValue] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const introTitleRef = useRef<HTMLParagraphElement>(null);
   const [restoring, setRestoring] = useState(false);
+  const [introOpen, setIntroOpen] = useState(false);
+
+  const chooseTheme = (choice: "nerd" | "fun") => {
+    setUiTheme(choice);
+    setIntroOpen(false);
+    delete document.documentElement.dataset.themeIntro;
+    try {
+      localStorage.setItem("ffcs-theme-intro-v1", "done");
+    } catch {
+      // The theme still works for this session if storage is unavailable.
+    }
+  };
 
   const active = tables.find((t) => t.id === activeTableId) || tables[0];
 
@@ -60,6 +73,14 @@ export default function AppHeader({ onExportImage, onShare }: Props) {
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
+
+  useEffect(() => {
+    if (document.documentElement.dataset.themeIntro === "true") setIntroOpen(true);
+  }, []);
+
+  useEffect(() => {
+    if (introOpen) introTitleRef.current?.focus();
+  }, [introOpen]);
 
   const handleAdd = () => {
     addTable();
@@ -355,14 +376,29 @@ export default function AppHeader({ onExportImage, onShare }: Props) {
 
         <div className="flex-1" />
 
-        <button
-          type="button"
-          className="theme-switch"
-          onClick={() => setUiTheme(uiTheme === "fun" ? "nerd" : "fun")}
-          aria-label={uiTheme === "fun" ? "Switch to Nerd Theme" : "Switch to Hve some fun theme"}
-        >
-          {uiTheme === "fun" ? "Nerd Theme 🤓" : "Hve some fun 😜"}
-        </button>
+        <div className="theme-switch-wrap">
+          <button
+            type="button"
+            className="theme-switch"
+            onClick={() => chooseTheme(uiTheme === "fun" ? "nerd" : "fun")}
+            aria-label={uiTheme === "fun" ? "Switch to Nerd Theme" : "Switch to Hve some fun theme"}
+            aria-expanded={introOpen}
+            aria-controls={introOpen ? "theme-intro" : undefined}
+          >
+            {uiTheme === "fun" ? "Nerd Theme 🤓" : "Hve some fun 😜"}
+          </button>
+          {introOpen && (
+            <div id="theme-intro" className="theme-intro" role="dialog" aria-labelledby="theme-intro-title">
+              <p id="theme-intro-title" className="theme-intro-title" ref={introTitleRef} tabIndex={-1}>
+                Are you a nerd 🤓 and want a dull ahh theme?
+              </p>
+              <div className="theme-intro-actions">
+                <button type="button" className="theme-intro-fun" onClick={() => chooseTheme("fun")}>F the nerds 😎😝</button>
+                <button type="button" className="theme-intro-nerd" onClick={() => chooseTheme("nerd")}>Yes. My Choicee 🖕</button>
+              </div>
+            </div>
+          )}
+        </div>
         <button
           type="button"
           className="theme-btn"
