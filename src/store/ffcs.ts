@@ -61,6 +61,8 @@ export interface FFCSState {
   wishlist: WishlistCourse[];
   /** "day" = paper sketch, "night" = chalkboard sketch (persisted) */
   theme: "day" | "night";
+  /** Visual style, independent of the fun theme's day/night palette. */
+  uiTheme: "nerd" | "fun";
   /** main timetable layout: "vertical" = days across the top, "horizontal" = days down the side (persisted) */
   gridOrientation: "vertical" | "horizontal";
   /** per-course color overrides, key `${code}|${type}` -> palette idx 0..9 (persisted) */
@@ -75,6 +77,7 @@ export interface FFCSState {
   setOwnerName: (name: string) => void;
   setTheme: (theme: "day" | "night") => void;
   toggleTheme: () => void;
+  setUiTheme: (theme: "nerd" | "fun") => void;
   setGridOrientation: (o: "vertical" | "horizontal") => void;
 
   setWishlist: (list: WishlistCourse[]) => void;
@@ -143,6 +146,7 @@ export const useFFCS = create<FFCSState>()(
       hydrated: false,
       wishlist: [],
       theme: "day",
+      uiTheme: "nerd",
       gridOrientation: "vertical",
       courseColors: {},
       lastUndo: null,
@@ -153,6 +157,7 @@ export const useFFCS = create<FFCSState>()(
       setTheme: (theme) => set({ theme }),
       toggleTheme: () =>
         set((s) => ({ theme: s.theme === "night" ? "day" : "night" })),
+      setUiTheme: (uiTheme) => set({ uiTheme }),
       setGridOrientation: (gridOrientation) => set({ gridOrientation }),
 
       setWishlist: (wishlist) => set({ wishlist }),
@@ -409,6 +414,7 @@ export const useFFCS = create<FFCSState>()(
           campus: "chennai", // Chennai-exclusive build — always pin
           ownerName: payload.ownerName || "",
           theme: payload.theme === "night" ? "night" : "day",
+          uiTheme: payload.uiTheme === "nerd" ? "nerd" : "fun",
           tables,
           activeTableId,
           wishlist: Array.isArray(payload.wishlist) ? payload.wishlist : [],
@@ -430,6 +436,7 @@ export const useFFCS = create<FFCSState>()(
         ownerName: s.ownerName,
         wishlist: s.wishlist,
         theme: s.theme,
+        uiTheme: s.uiTheme,
         gridOrientation: s.gridOrientation,
         courseColors: s.courseColors,
       }),

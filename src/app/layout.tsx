@@ -49,8 +49,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Applies the persisted night-sketch theme before first paint (no flash).
-  const themeScript = `try{if(JSON.parse(localStorage.getItem("ffcs-planner-v1")||"{}")?.state?.theme==="night"){document.documentElement.classList.add("night-sketch")}}catch(e){}`;
+  // Restore the visual mode before paint, including the fun mode's night palette.
+  const themeScript = `try{var s=JSON.parse(localStorage.getItem("ffcs-planner-v1")||"{}")?.state;var fun=s?.uiTheme==="fun";document.documentElement.classList.add(fun?"theme-fun":"theme-nerd");if(fun&&s?.theme==="night")document.documentElement.classList.add("night-sketch")}catch(e){document.documentElement.classList.add("theme-nerd")}`;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

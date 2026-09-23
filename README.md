@@ -1,6 +1,6 @@
 # ✏️ FFCSketch — Sketch Your Semester
 
-> **A fast, beautiful, hand-drawn timetable planner and schedule generator built exclusively for VIT Chennai.**  
+> **A fast timetable planner and schedule generator built exclusively for VIT Chennai, with simple and playful UI options.**
 > Plan your courses, resolve clashes, auto-generate conflict-free combinations, compare schedules, and share your plan with friends — 100% client-side, zero backend required.
 
 ---
@@ -33,8 +33,8 @@
 
 ## ✨ Highlights & Features
 
-- 🎨 **Hand-Drawn Paper & Chalkboard Aesthetics:** Built with a playful sketch aesthetic using **PaperCSS**, **Neucha** handwriting typography, ink shadows, paper folds, and tape accents.
-- 🌓 **Day & Night Sketch Themes:** Switch between warm parchment paper mode and dark chalkboard mode with zero flash of unstyled theme on boot.
+- 🤓 **Nerd Theme:** A plain, readable planner UI without PaperCSS, selected by default for new visitors.
+- 😜 **Hve some fun:** Switch in the top bar to the original PaperCSS sketch style, with its day and night palettes. The choice is saved locally and included in backups.
 - 🔄 **Two Grid Orientations:** Toggle between the classic **Vertical Layout** (Days along the top) and **Horizontal Layout** (Periods along the top).
 - ⚡ **100% Client-Side & Offline First:** Complete course catalog bundled in-memory (`courses.json`). Full PWA support with service workers and offline caching.
 - 🧠 **Smart DFS Combinatorial Generator:** Generates up to dozens of optimal, clash-free schedules in milliseconds using priority constraints, locked sections, and preference windows.

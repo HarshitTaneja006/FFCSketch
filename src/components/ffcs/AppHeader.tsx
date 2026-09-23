@@ -34,6 +34,8 @@ export default function AppHeader({ onExportImage, onShare }: Props) {
   const tables = useFFCS((s) => s.tables);
   const activeTableId = useFFCS((s) => s.activeTableId);
   const theme = useFFCS((s) => s.theme);
+  const uiTheme = useFFCS((s) => s.uiTheme);
+  const setUiTheme = useFFCS((s) => s.setUiTheme);
   const toggleTheme = useFFCS((s) => s.toggleTheme);
   const addTable = useFFCS((s) => s.addTable);
   const renameTable = useFFCS((s) => s.renameTable);
@@ -353,15 +355,21 @@ export default function AppHeader({ onExportImage, onShare }: Props) {
 
         <div className="flex-1" />
 
-        {/* Actions */}
-        <button
-          className="theme-btn"
-          onClick={toggleTheme}
-          title={theme === "night" ? "Switch to day paper theme" : "Switch to night sketch theme"}
-          aria-label={theme === "night" ? "Switch to day paper theme" : "Switch to night sketch theme"}
-        >
-          {theme === "night" ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
+        {/* Visual theme; day/night is only relevant to the playful style. */}
+        <div className="theme-choice" role="group" aria-label="UI theme">
+          <button type="button" aria-pressed={uiTheme === "nerd"} onClick={() => setUiTheme("nerd")}>Nerd Theme 🤓</button>
+          <button type="button" aria-pressed={uiTheme === "fun"} onClick={() => setUiTheme("fun")}>Hve some fun 😜</button>
+        </div>
+        {uiTheme === "fun" && (
+          <button
+            className="theme-btn"
+            onClick={toggleTheme}
+            title={theme === "night" ? "Switch to day paper theme" : "Switch to night sketch theme"}
+            aria-label={theme === "night" ? "Switch to day paper theme" : "Switch to night sketch theme"}
+          >
+            {theme === "night" ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+        )}
         <button
           className="btn btn-small"
           onClick={onExportImage}
