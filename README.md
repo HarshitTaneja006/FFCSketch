@@ -33,8 +33,8 @@
 
 ## ✨ Highlights & Features
 
-- 🤓 **Nerd Theme:** A plain, readable planner UI without PaperCSS, selected by default for new visitors.
-- 😜 **Hve some fun:** Switch in the top bar to the original PaperCSS sketch style, with its day and night palettes. The choice is saved locally and included in backups.
+- 😜 **Hve some fun:** The default PaperCSS sketch style. The top bar offers a single button to switch to the other UI theme.
+- 🤓 **Nerd Theme:** A plain, readable planner UI without PaperCSS, with a colorful button back to the fun theme. Both styles support light and dark mode; preferences are saved locally and included in backups.
 - 🔄 **Two Grid Orientations:** Toggle between the classic **Vertical Layout** (Days along the top) and **Horizontal Layout** (Periods along the top).
 - ⚡ **100% Client-Side & Offline First:** Complete course catalog bundled in-memory (`courses.json`). Full PWA support with service workers and offline caching.
 - 🧠 **Smart DFS Combinatorial Generator:** Generates up to dozens of optimal, clash-free schedules in milliseconds using priority constraints, locked sections, and preference windows.

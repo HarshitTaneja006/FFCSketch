@@ -355,21 +355,23 @@ export default function AppHeader({ onExportImage, onShare }: Props) {
 
         <div className="flex-1" />
 
-        {/* Visual theme; day/night is only relevant to the playful style. */}
-        <div className="theme-choice" role="group" aria-label="UI theme">
-          <button type="button" aria-pressed={uiTheme === "nerd"} onClick={() => setUiTheme("nerd")}>Nerd Theme 🤓</button>
-          <button type="button" aria-pressed={uiTheme === "fun"} onClick={() => setUiTheme("fun")}>Hve some fun 😜</button>
-        </div>
-        {uiTheme === "fun" && (
-          <button
-            className="theme-btn"
-            onClick={toggleTheme}
-            title={theme === "night" ? "Switch to day paper theme" : "Switch to night sketch theme"}
-            aria-label={theme === "night" ? "Switch to day paper theme" : "Switch to night sketch theme"}
-          >
-            {theme === "night" ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
-        )}
+        <button
+          type="button"
+          className="theme-switch"
+          onClick={() => setUiTheme(uiTheme === "fun" ? "nerd" : "fun")}
+          aria-label={uiTheme === "fun" ? "Switch to Nerd Theme" : "Switch to Hve some fun theme"}
+        >
+          {uiTheme === "fun" ? "Nerd Theme 🤓" : "Hve some fun 😜"}
+        </button>
+        <button
+          type="button"
+          className="theme-btn"
+          onClick={toggleTheme}
+          title={theme === "night" ? "Switch to light mode" : "Switch to dark mode"}
+          aria-label={theme === "night" ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {theme === "night" ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
         <button
           className="btn btn-small"
           onClick={onExportImage}

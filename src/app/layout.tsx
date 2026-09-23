@@ -49,8 +49,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Restore the visual mode before paint, including the fun mode's night palette.
-  const themeScript = `try{var s=JSON.parse(localStorage.getItem("ffcs-planner-v1")||"{}")?.state;var fun=s?.uiTheme==="fun";document.documentElement.classList.add(fun?"theme-fun":"theme-nerd");if(fun&&s?.theme==="night")document.documentElement.classList.add("night-sketch")}catch(e){document.documentElement.classList.add("theme-nerd")}`;
+  // Restore the chosen UI and color mode before first paint.
+  const themeScript = `try{var s=JSON.parse(localStorage.getItem("ffcs-planner-v1")||"{}")?.state;document.documentElement.classList.add(s?.uiTheme==="nerd"?"theme-nerd":"theme-fun");if(s?.theme==="night")document.documentElement.classList.add("night-sketch")}catch(e){document.documentElement.classList.add("theme-fun")}`;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

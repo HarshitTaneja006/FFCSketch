@@ -93,7 +93,7 @@ export default function Page() {
   useEffect(() => {
     document.documentElement.classList.toggle("theme-fun", uiTheme === "fun");
     document.documentElement.classList.toggle("theme-nerd", uiTheme === "nerd");
-    document.documentElement.classList.toggle("night-sketch", uiTheme === "fun" && theme === "night");
+    document.documentElement.classList.toggle("night-sketch", theme === "night");
   }, [theme, uiTheme]);
 
   /* ---------------- keyboard shortcuts: 1-4 tabs, Ctrl/Cmd+Z undo ---------------- */

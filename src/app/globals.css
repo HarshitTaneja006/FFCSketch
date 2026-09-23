@@ -7,6 +7,20 @@ html, body {
   min-height: 100%;
 }
 
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 5px 10px;
+  border: 1px solid var(--cell-border);
+  border-radius: 5px;
+  font: inherit;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
 /* Shared accessibility behavior across both visual themes. */
 button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible {
   outline: 2px solid var(--danger);

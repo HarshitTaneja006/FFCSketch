@@ -59,9 +59,9 @@ export interface FFCSState {
   hydrated: boolean;
   /** generator wishlist (persisted) */
   wishlist: WishlistCourse[];
-  /** "day" = paper sketch, "night" = chalkboard sketch (persisted) */
+  /** Light/dark palette for either UI style (persisted). */
   theme: "day" | "night";
-  /** Visual style, independent of the fun theme's day/night palette. */
+  /** Visual style, independent of the light/dark palette. */
   uiTheme: "nerd" | "fun";
   /** main timetable layout: "vertical" = days across the top, "horizontal" = days down the side (persisted) */
   gridOrientation: "vertical" | "horizontal";
@@ -146,7 +146,7 @@ export const useFFCS = create<FFCSState>()(
       hydrated: false,
       wishlist: [],
       theme: "day",
-      uiTheme: "nerd",
+      uiTheme: "fun",
       gridOrientation: "vertical",
       courseColors: {},
       lastUndo: null,

@@ -1633,3 +1633,20 @@ table.tt.tt-horizontal .ttb-code {
 table.tt.tt-horizontal .ttb-fac {
   font-size: 0.56rem;
 }
+
+/* In the playful UI, the other theme is deliberately understated. */
+html.theme-fun .ffcs-body .theme-switch {
+  background: #e6e7e9;
+  color: #34383d;
+  border: 1px solid #9da3aa;
+  border-radius: 4px;
+  box-shadow: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  transform: none;
+}
+html.theme-fun .ffcs-body .theme-switch:hover {
+  background: #d5d7d9;
+  transform: none;
+  box-shadow: none;
+}
