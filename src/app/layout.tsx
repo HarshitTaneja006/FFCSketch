@@ -49,8 +49,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Applies the persisted night-sketch theme before first paint (no flash).
-  const themeScript = `try{if(JSON.parse(localStorage.getItem("ffcs-planner-v1")||"{}")?.state?.theme==="night"){document.documentElement.classList.add("night-sketch")}}catch(e){}`;
+  // Read first-visit status before the planner writes its initial persisted state.
+  const themeScript = `try{var saved=localStorage.getItem("ffcs-planner-v1");var intro=localStorage.getItem("ffcs-theme-intro-v1");if(intro==="pending"||(intro===null&&saved===null)){document.documentElement.dataset.themeIntro="true";localStorage.setItem("ffcs-theme-intro-v1","pending")}else if(intro===null){localStorage.setItem("ffcs-theme-intro-v1","done")}var s=JSON.parse(saved||"{}")?.state;document.documentElement.classList.add(s?.uiTheme==="nerd"?"theme-nerd":"theme-fun");if(s?.theme==="night")document.documentElement.classList.add("night-sketch")}catch(e){document.documentElement.classList.add("theme-fun")}`;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

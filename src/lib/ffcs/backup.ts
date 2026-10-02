@@ -26,6 +26,7 @@ export interface BackupPayload {
   campus: Campus;
   ownerName: string;
   theme: "day" | "night";
+  uiTheme?: "nerd" | "fun";
   activeTableId: string;
   tables: BackupTable[];
   wishlist: WishlistCourse[];
@@ -36,6 +37,7 @@ interface BackupSource {
   campus: Campus;
   ownerName: string;
   theme: "day" | "night";
+  uiTheme: "nerd" | "fun";
   activeTableId: string;
   tables: Array<{ id: string; name: string; createdAt: number; entries: CartEntry[] }>;
   wishlist: WishlistCourse[];
@@ -51,6 +53,7 @@ export function buildBackup(state: BackupSource): BackupPayload {
     campus: state.campus === "chennai" ? "chennai" : "vellore",
     ownerName: state.ownerName || "",
     theme: state.theme === "night" ? "night" : "day",
+    uiTheme: state.uiTheme,
     activeTableId: state.activeTableId,
     tables: state.tables.map((t) => ({
       id: t.id,
@@ -158,6 +161,7 @@ export function parseBackupFile(file: File): Promise<BackupPayload> {
           campus: raw.campus === "chennai" ? "chennai" : "vellore",
           ownerName: typeof raw.ownerName === "string" ? raw.ownerName.slice(0, 80) : "",
           theme: raw.theme === "night" ? "night" : "day",
+          uiTheme: raw.uiTheme === "nerd" ? "nerd" : "fun",
           activeTableId: typeof raw.activeTableId === "string" ? raw.activeTableId : "",
           tables,
           wishlist,

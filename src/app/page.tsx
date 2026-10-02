@@ -63,6 +63,7 @@ export default function Page() {
   const ownerName = useFFCS((s) => s.ownerName);
   const setOwnerName = useFFCS((s) => s.setOwnerName);
   const theme = useFFCS((s) => s.theme);
+  const uiTheme = useFFCS((s) => s.uiTheme);
 
   const [tab, setTab] = useState<TabKey>("timetable");
   const [shareOpen, setShareOpen] = useState(false);
@@ -88,10 +89,12 @@ export default function Page() {
   const exportRef = useRef<HTMLDivElement | null>(null);
   const activeTable = tables.find((t) => t.id === activeTableId) || tables[0];
 
-  /* ---------------- night sketch theme ---------------- */
+  /* Keep document styling in sync with the persisted visual choice. */
   useEffect(() => {
+    document.documentElement.classList.toggle("theme-fun", uiTheme === "fun");
+    document.documentElement.classList.toggle("theme-nerd", uiTheme === "nerd");
     document.documentElement.classList.toggle("night-sketch", theme === "night");
-  }, [theme]);
+  }, [theme, uiTheme]);
 
   /* ---------------- keyboard shortcuts: 1-4 tabs, Ctrl/Cmd+Z undo ---------------- */
   useEffect(() => {

@@ -1,0 +1,234 @@
+/* A straightforward, high-contrast planner. No PaperCSS rules apply here. */
+html.theme-nerd {
+  color-scheme: light;
+  --ffcs-ink: #252a30;
+  --ffcs-paper: #fff;
+  --ffcs-accent: #355c76;
+  --body: #f7f7f7;
+  --grid-line: transparent;
+  --card: #fff;
+  --input: #fff;
+  --input-border: #b9c0c7;
+  --accent: #edf0f2;
+  --on-accent: #252a30;
+  --good: #e4f4ec;
+  --good-soft: #f0faf4;
+  --good-strong: #176b42;
+  --bad: #fce8e7;
+  --bad-soft: #fff3f2;
+  --danger: #ba3030;
+  --muted-ink: #535c66;
+  --label-ink: #59626c;
+  --flex-bg: #fafafa;
+  --head-bg: #f1f2f3;
+  --time-bg: #fafafa;
+  --lunch-a: #f3f4f5;
+  --lunch-b: #f3f4f5;
+  --scroll-thumb: #b9c0c7;
+  --scroll-edge: #f7f7f7;
+  --shadow-ink: transparent;
+  --shadow-strong: transparent;
+  --tt-ink: #606a74;
+  --cell-border: #dce0e4;
+  --tt0: #f9e9b7; --tt1: #d7f0df; --tt2: #f7dce5; --tt3: #dcecf8; --tt4: #eae0f7;
+  --tt5: #f9e4d5; --tt6: #d9f2ed; --tt7: #f3f0cb; --tt8: #f9dfd6; --tt9: #e4edda;
+}
+
+html.theme-nerd.night-sketch {
+  color-scheme: dark;
+  --ffcs-ink: #e4e7eb;
+  --ffcs-paper: #23272c;
+  --ffcs-accent: #a8c4d8;
+  --body: #171a1e;
+  --card: #23272c;
+  --input: #292e34;
+  --input-border: #626c77;
+  --accent: #343b43;
+  --on-accent: #f1f3f5;
+  --good: #294437;
+  --good-soft: #203229;
+  --good-strong: #9bd6b5;
+  --bad: #513132;
+  --bad-soft: #3b2728;
+  --danger: #ff9999;
+  --muted-ink: #b7c0c9;
+  --label-ink: #adb7c1;
+  --flex-bg: #292e34;
+  --head-bg: #31373e;
+  --time-bg: #292e34;
+  --lunch-a: #292e34;
+  --lunch-b: #292e34;
+  --scroll-thumb: #626c77;
+  --scroll-edge: #171a1e;
+  --tt-ink: #d3dbe3;
+  --cell-border: #4b545e;
+  --tt0: #594e35; --tt1: #304a3b; --tt2: #533e47; --tt3: #354b5b; --tt4: #483e57;
+  --tt5: #584438; --tt6: #31504b; --tt7: #505039; --tt8: #553f38; --tt9: #404d3a;
+}
+
+html.theme-nerd .ffcs-body {
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: normal;
+  background: var(--body);
+  color: var(--ffcs-ink);
+  line-height: 1.45;
+}
+
+html.theme-nerd .ffcs-body h1,
+html.theme-nerd .ffcs-body h2,
+html.theme-nerd .ffcs-body h3,
+html.theme-nerd .ffcs-body h4 {
+  font-family: inherit;
+  letter-spacing: normal;
+}
+
+/* Existing components use inline sketch borders; normalize only their visuals. */
+html.theme-nerd .ffcs-body [style*="border-radius"],
+html.theme-nerd .ffcs-body [style*="borderRadius"] {
+  border-radius: 6px !important;
+}
+html.theme-nerd .ffcs-body [style*="box-shadow"],
+html.theme-nerd .ffcs-body [style*="boxShadow"] {
+  box-shadow: none !important;
+}
+html.theme-nerd .ffcs-body [style*="dashed"] {
+  border-style: solid !important;
+}
+html.theme-nerd .ffcs-body .taped[style*="border"],
+html.theme-nerd .ffcs-body section[style*="border"],
+html.theme-nerd .ffcs-body [role="listbox"][style*="border"] {
+  border-width: 1px !important;
+  border-style: solid !important;
+  border-color: var(--cell-border) !important;
+}
+html.theme-nerd .ffcs-body header,
+html.theme-nerd .ffcs-body footer {
+  box-shadow: none !important;
+  border-color: var(--cell-border) !important;
+}
+html.theme-nerd .ffcs-body header > div > div:first-child > div:first-child {
+  transform: none !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+html.theme-nerd .sketch-underline {
+  background: none;
+  text-decoration: none;
+}
+html.theme-nerd .taped::before,
+html.theme-nerd .tt-sheet::before,
+html.theme-nerd .tt-sheet::after,
+html.theme-nerd .corner-fold::after,
+html.theme-nerd .doodle-hint::after,
+html.theme-nerd .tt-block::before,
+html.theme-nerd .ffcs-footer::before,
+html.theme-nerd .ffcs-footer::after,
+html.theme-nerd .combo-card.best::after,
+html.theme-nerd .text-share-btn::before {
+  display: none !important;
+}
+html.theme-nerd .ffcs-body .paper-tabs {
+  border-bottom: 1px solid var(--cell-border) !important;
+  gap: 0;
+}
+html.theme-nerd .paper-tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  padding: 0.65rem 0.9rem;
+  font: inherit;
+  color: var(--muted-ink);
+  box-shadow: none;
+  transform: none;
+}
+html.theme-nerd .paper-tabs button.active {
+  border-bottom-color: var(--ffcs-ink);
+  color: var(--ffcs-ink);
+  background: transparent;
+  font-weight: 700;
+}
+html.theme-nerd .paper-tabs button:hover { color: var(--ffcs-ink); transform: none; }
+
+html.theme-nerd .ffcs-body button,
+html.theme-nerd .ffcs-body .btn,
+html.theme-nerd .ffcs-body .chip,
+html.theme-nerd .ffcs-body input,
+html.theme-nerd .ffcs-body select,
+html.theme-nerd .ffcs-body textarea,
+html.theme-nerd .ffcs-body .stat-card,
+html.theme-nerd .ffcs-body .combo-card,
+html.theme-nerd .ffcs-body .tt-wrap,
+html.theme-nerd .ffcs-body .tt-block,
+html.theme-nerd .ffcs-body .ffcs-popover {
+  border-radius: 6px;
+  box-shadow: none;
+  transform: none;
+  font-family: inherit;
+}
+html.theme-nerd .ffcs-body button:hover,
+html.theme-nerd .ffcs-body .combo-card:hover,
+html.theme-nerd .ffcs-body .stat-card:hover,
+html.theme-nerd .ffcs-body .tt-block:hover {
+  transform: none;
+  box-shadow: none;
+}
+html.theme-nerd .ffcs-body input,
+html.theme-nerd .ffcs-body select,
+html.theme-nerd .ffcs-body textarea {
+  background-color: var(--input);
+  color: var(--ffcs-ink);
+  border: 1px solid var(--input-border);
+}
+html.theme-nerd .ffcs-body button[style*="border"] { border-width: 1px !important; }
+html.theme-nerd .ffcs-body .btn,
+html.theme-nerd .ffcs-body button:not(.tt-block) { cursor: pointer; }
+html.theme-nerd .ffcs-body button:disabled { cursor: not-allowed; opacity: .55; }
+html.theme-nerd .ffcs-body .chip { border: 1px solid var(--cell-border); }
+html.theme-nerd .ffcs-body .tt-wrap { border: 1px solid var(--cell-border); }
+html.theme-nerd table.tt thead th { border-bottom: 1px solid var(--cell-border); font-weight: 700; }
+html.theme-nerd .tt-block { border: 1px solid var(--tt-ink); }
+html.theme-nerd .stamp-clashfree,
+html.theme-nerd .doctor-sticker,
+html.theme-nerd .new-tab-sticker,
+html.theme-nerd .loved-sticker { transform: none; box-shadow: none; border-radius: 6px; }
+html.theme-nerd .ffcs-body a { color: var(--ffcs-accent); }
+html.theme-nerd .ffcs-body a:hover { text-decoration: underline; }
+html.theme-nerd .empty-doodle { font-family: inherit; }
+
+/* Icon-only actions must not rely on the browser's baseline alignment. */
+html.theme-nerd .ffcs-body .prio-btn:not(.wide),
+html.theme-nerd .ffcs-body .theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  vertical-align: middle;
+}
+html.theme-nerd .ffcs-body .prio-btn.wide {
+  justify-content: center;
+}
+html.theme-nerd .ffcs-body .prio-btn svg,
+html.theme-nerd .ffcs-body .theme-btn svg {
+  display: block;
+  flex: none;
+}
+
+html.theme-nerd .ffcs-body .theme-switch {
+  background: #ffe08a;
+  color: #2d2926;
+  border: 2px solid #2d2926;
+  border-radius: 9px 5px 11px 6px;
+  box-shadow: 2px 3px 0 rgba(45, 41, 38, 0.45);
+  font-family: var(--font-neucha), "Comic Sans MS", "Segoe Print", cursive, sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transform: none;
+}
+html.theme-nerd .ffcs-body .theme-switch:hover {
+  background: #ffd36a;
+  box-shadow: 2px 4px 0 rgba(45, 41, 38, 0.45);
+  transform: translateY(-2px);
+}
