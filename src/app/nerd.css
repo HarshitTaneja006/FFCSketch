@@ -216,13 +216,19 @@ html.theme-nerd .ffcs-body .theme-btn svg {
   flex: none;
 }
 
-/* In the plain UI, the way back to fun should stand out. */
 html.theme-nerd .ffcs-body .theme-switch {
-  background: linear-gradient(110deg, #ffe2a5, #ffc2d6, #bfe9f4);
-  color: #28232b;
-  border-color: #cf9cbd;
+  background: #ffe08a;
+  color: #2d2926;
+  border: 2px solid #2d2926;
+  border-radius: 9px 5px 11px 6px;
+  box-shadow: 2px 3px 0 rgba(45, 41, 38, 0.45);
+  font-family: var(--font-neucha), "Comic Sans MS", "Segoe Print", cursive, sans-serif;
   font-weight: 700;
+  font-size: 0.95rem;
+  transform: none;
 }
 html.theme-nerd .ffcs-body .theme-switch:hover {
-  background: linear-gradient(110deg, #ffcc74, #ffa5c4, #96dcec);
+  background: #ffd36a;
+  box-shadow: 2px 4px 0 rgba(45, 41, 38, 0.45);
+  transform: translateY(-2px);
 }
