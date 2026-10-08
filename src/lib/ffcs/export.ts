@@ -48,10 +48,49 @@ async function nodeToPng(
   });
 }
 
+/** CSS that kills scroll containers + scrollbar chrome inside a PNG capture.
+ *  `.tt-wrap` uses `overflow-x: auto` with styled webkit scrollbars on screen —
+ *  html-to-image faithfully rasterizes that scrollbar track into the image,
+ *  so exports show scroll bars around the timetable. Forcing visible overflow
+ *  and `display: none` scrollbars on the clone fixes it. */
+const NO_SCROLL_CSS = [
+  ".tt-wrap,.ffcs-scroll,.side-scroll{overflow:visible !important;max-height:none !important;scrollbar-width:none !important;-ms-overflow-style:none !important;}",
+  ".tt-wrap::-webkit-scrollbar,.ffcs-scroll::-webkit-scrollbar,.side-scroll::-webkit-scrollbar{display:none !important;width:0 !important;height:0 !important;}",
+  ".tt-wrap::-webkit-scrollbar-thumb,.tt-wrap::-webkit-scrollbar-track{background:transparent !important;border:none !important;}",
+].join("\n");
+
+function injectNoScrollStyle(parent: HTMLElement): HTMLStyleElement {
+  const style = document.createElement("style");
+  style.setAttribute("data-export-no-scroll", "");
+  style.textContent = NO_SCROLL_CSS;
+  parent.appendChild(style);
+  return style;
+}
+
 /** Capture any mounted view (Slot View grid column, Compare root) as one PNG. */
 export async function exportElementToPng(el: HTMLElement, filename: string): Promise<void> {
-  const dataUrl = await nodeToPng(el, paperBg());
-  downloadDataUrl(dataUrl, filename);
+  // temp style in <head> so the html-to-image clone of `el` renders without scrollbars
+  const style = document.createElement("style");
+  style.setAttribute("data-export-no-scroll", "");
+  style.textContent = NO_SCROLL_CSS;
+  document.head.appendChild(style);
+  // inline fallback: force visible overflow on live scroll containers (copied verbatim to the clone)
+  const scrollers = Array.from(
+    el.querySelectorAll<HTMLElement>(".tt-wrap,.ffcs-scroll,.side-scroll")
+  );
+  const prev = scrollers.map((n) => n.style.overflow);
+  scrollers.forEach((n) => {
+    n.style.overflow = "visible";
+  });
+  try {
+    const dataUrl = await nodeToPng(el, paperBg());
+    downloadDataUrl(dataUrl, filename);
+  } finally {
+    scrollers.forEach((n, i) => {
+      n.style.overflow = prev[i];
+    });
+    style.remove();
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -121,13 +160,17 @@ export async function exportTimetablePng(
   const grid = gridContainer.querySelector(".tt-wrap");
   if (grid) {
     const clone = grid.cloneNode(true) as HTMLElement;
-    clone.style.cssText += ";margin-bottom:18px;";
+    clone.style.cssText +=
+      ";margin-bottom:18px;overflow:visible;max-height:none;scrollbar-width:none;-ms-overflow-style:none;";
     // strip interactive affordances that make no sense in a static image
     clone.querySelectorAll<HTMLElement>(".tt-empty-slot").forEach((n) => {
       n.style.opacity = "0.35";
     });
     sheet.appendChild(clone);
   }
+  // belt-and-braces: the no-scroll rules also live in a <style> inside the
+  // sheet so webkit scrollbar pseudo-elements never paint in the snapshot
+  injectNoScrollStyle(sheet);
 
   /* course list */
   const listTitle = document.createElement("div");

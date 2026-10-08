@@ -8,7 +8,7 @@
 
 import { useEffect, useRef } from "react";
 import { Day, DAY_LABELS } from "@/lib/ffcs/types";
-import { fmtTime, labPeriodRange, slotsAtCell } from "@/lib/ffcs/slots";
+import { fmtTime, labPeriodRange, slotsAtCell, theoryPeriodRange } from "@/lib/ffcs/slots";
 
 export interface SlotFinderCell {
   day: Day;
@@ -46,7 +46,9 @@ export function SlotFinderPopover({ cell, anchor, campus, onClose, onPick }: Pro
 
   if (!cell) return null;
 
-  const { start, end } = labPeriodRange(cell.periodIdx);
+  const lab = labPeriodRange(cell.periodIdx);
+  const thy = theoryPeriodRange(cell.periodIdx);
+  const { start, end } = lab;
   const options = slotsAtCell(cell.day, cell.periodIdx, campus);
 
   const pos = (() => {
@@ -67,8 +69,13 @@ export function SlotFinderPopover({ cell, anchor, campus, onClose, onPick }: Pro
       <div className="flex items-start justify-between gap-2 mb-1.5">
         <div>
           <div className="font-bold" style={{ fontSize: "0.92rem" }}>
-            🔍 Free period — {DAY_LABELS[cell.day].slice(0, 3)} {fmtTime(start).replace(":00", "")}-
-            {fmtTime(end).replace(":00", "")}
+            🔍 Free period — {DAY_LABELS[cell.day].slice(0, 3)}{" "}
+            <span className="tt-theory-time" style={{ display: "inline" }}>
+              {fmtTime(thy.start).replace(":00", "")}-{fmtTime(thy.end).replace(":00", "")}
+            </span>{" "}
+            <span className="tt-lab-time" style={{ display: "inline" }}>
+              {fmtTime(lab.start).replace(":00", "")}-{fmtTime(lab.end).replace(":00", "")}
+            </span>
           </div>
           <div style={{ fontSize: "0.76rem", color: "var(--muted-ink)" }}>
             Search courses by any slot that meets here:

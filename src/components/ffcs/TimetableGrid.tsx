@@ -21,7 +21,6 @@ import {
 } from "@/lib/ffcs/types";
 import { buildGridBlocks } from "@/lib/ffcs/timetable";
 import {
-  LAB_PERIOD_STARTS,
   LUNCH,
   LUNCH_LABEL,
   MORNING_ROWS,
@@ -30,6 +29,7 @@ import {
   fmtTimeShort,
   labPeriodRange,
   slotsAtCell,
+  theoryPeriodRange,
 } from "@/lib/ffcs/slots";
 import { useFFCS } from "@/store/ffcs";
 
@@ -160,15 +160,31 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
     return { starting, covered, maxSpan, isEmpty: starting.length === 0, hasReal: real };
   };
 
-  /* ---------------- VERTICAL: rows = periods, cols = days ---------------- */
+  /* ---------------- VERTICAL: rows = periods, cols = days ----------------
+   * Time gutter: THEORY timing is primary, LAB timing sits below in a
+   * different hue (see .tt-theory-time / .tt-lab-time). Row p maps 1:1 to
+   * THEORY_PERIODS[p] and lab period p. */
+  const renderTimeGutter = (periodIdx: number) => {
+    const t = theoryPeriodRange(periodIdx);
+    const l = labPeriodRange(periodIdx);
+    return (
+      <td
+        className="tt-time"
+        title={`Theory ${fmtTime(t.start)} - ${fmtTime(t.end)} · Lab ${fmtTime(l.start)} - ${fmtTime(l.end)}`}
+      >
+        <div className="tt-theory-time">{fmtTimeShort(t.start)}</div>
+        <div className="tt-theory-time tt-theory-end">{fmtTimeShort(t.end)}</div>
+        <div className="tt-lab-time" title={`Lab ${fmtTime(l.start)} - ${fmtTime(l.end)}`}>
+          {`${fmtTimeShort(l.start)}–${fmtTimeShort(l.end)}`}
+        </div>
+      </td>
+    );
+  };
+
   const renderRowVertical = (periodIdx: number) => {
-    const { start, end } = labPeriodRange(periodIdx);
     return (
       <tr key={`p${periodIdx}`}>
-        <td className="tt-time">
-          <div>{fmtTimeShort(start)}</div>
-          <div style={{ opacity: 0.7 }}>{fmtTimeShort(end)}</div>
-        </td>
+        {renderTimeGutter(periodIdx)}
         {DAYS.map((day) => {
           const { starting, covered, maxSpan, isEmpty } = cellAt(day, periodIdx);
           if (covered) return null;
@@ -260,11 +276,19 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
                   Day
                 </th>
                 {Array.from({ length: TOTAL_ROWS }, (_, p) => {
-                  const { start, end } = labPeriodRange(p);
+                  const t = theoryPeriodRange(p);
+                  const l = labPeriodRange(p);
                   const th = (
-                    <th key={p} className="tt-time-h" title={`${fmtTime(start)} - ${fmtTime(end)}`}>
-                      <div>{fmtTimeShort(start)}</div>
-                      <div style={{ opacity: 0.7 }}>{fmtTimeShort(end)}</div>
+                    <th
+                      key={p}
+                      className="tt-time-h"
+                      title={`Theory ${fmtTime(t.start)} - ${fmtTime(t.end)} · Lab ${fmtTime(l.start)} - ${fmtTime(l.end)}`}
+                    >
+                      <div className="tt-theory-time">{fmtTimeShort(t.start)}</div>
+                      <div className="tt-theory-time tt-theory-end">{fmtTimeShort(t.end)}</div>
+                      <div className="tt-lab-time">
+                        {`${fmtTimeShort(l.start)}–${fmtTimeShort(l.end)}`}
+                      </div>
                     </th>
                   );
                   return p === MORNING_ROWS
@@ -304,15 +328,15 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
               </tr>
               {Array.from({ length: 6 }, (_, i) => renderRowVertical(MORNING_ROWS + i))}
               <tr>
-                <td className="tt-time">
-                  <div>{fmtTimeShort(1140)}</div>
-                  <div style={{ opacity: 0.7 }}>{fmtTimeShort(1190)}</div>
+                <td className="tt-time" title="Unscheduled / flexible sections">
+                  <div className="tt-theory-time">Flex</div>
+                  <div className="tt-lab-time">no time</div>
                 </td>
                 <td className="tt-lunch" colSpan={5} style={{ padding: 4 }}>
                   {(() => {
                     const extra = allBlocks.filter((b) => !b.isFlex && b.rowStart === 12);
                     if (extra.length === 0)
-                      return <span style={{ opacity: 0.55 }}>Evening slot row (S1-S4)</span>;
+                      return <span style={{ opacity: 0.55 }}>S1–S4 live in the 6:35 PM row above · flex overflow lands here</span>;
                     return (
                       <div className="flex flex-wrap gap-1 justify-center">
                         {extra.map((b, i) =>
@@ -392,9 +416,11 @@ export default function TimetableGrid({ entries, campus, onBlockClick, onEmptyCe
             👻 ghost peek on
           </span>
         )}
-        <span className="chip" style={{ opacity: 0.7 }}>
-          Grid shows {fmtTime(LAB_PERIOD_STARTS[0])} - 7:20 PM · lunch {fmtTime(LUNCH.start)}-
-          {fmtTime(LUNCH.end).replace(":00", "")}
+        <span className="chip" title="Time gutter shows theory timings on top, lab timings below in blue">
+          <span className="tt-theory-time" style={{ display: "inline" }}>Theory</span>
+          {" main · "}
+          <span className="tt-lab-time" style={{ display: "inline" }}>lab sub</span>
+          {` · ${fmtTimeShort(theoryPeriodRange(0).start)}–${fmtTimeShort(theoryPeriodRange(TOTAL_ROWS - 1).end)} · lunch ${fmtTime(LUNCH.start)}–${fmtTime(LUNCH.end).replace(":00", "")}`}
         </span>
       </div>
     </div>
