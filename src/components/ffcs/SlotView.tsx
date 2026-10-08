@@ -32,6 +32,7 @@ import {
   MORNING_ROWS,
   SLOT_MEETINGS,
   TOTAL_ROWS,
+  theoryPeriodRange,
 } from "@/lib/ffcs/slots";
 import { useFFCS } from "@/store/ffcs";
 
@@ -405,11 +406,19 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
                       Day
                     </th>
                     {Array.from({ length: TOTAL_ROWS }, (_, p) => {
-                      const { start, end } = labPeriodRange(p);
+                      const t = theoryPeriodRange(p);
+                      const l = labPeriodRange(p);
                       const th = (
-                        <th key={p} className="tt-time-h" title={`${fmtTime(start)} - ${fmtTime(end)}`}>
-                          <div>{fmtTimeShort(start)}</div>
-                          <div style={{ opacity: 0.7 }}>{fmtTimeShort(end)}</div>
+                        <th
+                          key={p}
+                          className="tt-time-h"
+                          title={`Theory ${fmtTime(t.start)} - ${fmtTime(t.end)} · Lab ${fmtTime(l.start)} - ${fmtTime(l.end)}`}
+                        >
+                          <div className="tt-theory-time">{fmtTimeShort(t.start)}</div>
+                          <div className="tt-theory-time tt-theory-end">{fmtTimeShort(t.end)}</div>
+                          <div className="tt-lab-time">
+                            {`${fmtTimeShort(l.start)}–${fmtTimeShort(l.end)}`}
+                          </div>
                         </th>
                       );
                       return p === MORNING_ROWS
@@ -459,30 +468,51 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {Array.from({ length: MORNING_ROWS }, (_, p) => (
-                    <tr key={`m${p}`}>
-                      <td className="tt-time">
-                        <div>{fmtTimeShort(labPeriodRange(p).start)}</div>
-                        <div style={{ opacity: 0.7 }}>{fmtTimeShort(labPeriodRange(p).end)}</div>
-                      </td>
-                      {DAYS.map((d) => renderCellTd(d, p, d))}
-                    </tr>
-                  ))}
+                  {Array.from({ length: MORNING_ROWS }, (_, p) => {
+                    const t = theoryPeriodRange(p);
+                    const l = labPeriodRange(p);
+                    return (
+                      <tr key={`m${p}`}>
+                        <td
+                          className="tt-time"
+                          title={`Theory ${fmtTime(t.start)} - ${fmtTime(t.end)} · Lab ${fmtTime(l.start)} - ${fmtTime(l.end)}`}
+                        >
+                          <div className="tt-theory-time">{fmtTimeShort(t.start)}</div>
+                          <div className="tt-theory-time tt-theory-end">{fmtTimeShort(t.end)}</div>
+                          <div className="tt-lab-time">
+                            {`${fmtTimeShort(l.start)}–${fmtTimeShort(l.end)}`}
+                          </div>
+                        </td>
+                        {DAYS.map((d) => renderCellTd(d, p, d))}
+                      </tr>
+                    );
+                  })}
                   <tr>
                     <td className="tt-time" style={{ padding: 2 }}>Lunch</td>
                     <td className="tt-lunch" colSpan={5}>
                       ☀ LUNCH · {LUNCH_LABEL}
                     </td>
                   </tr>
-                  {Array.from({ length: TOTAL_ROWS - MORNING_ROWS }, (_, i) => (
-                    <tr key={`a${i}`}>
-                      <td className="tt-time">
-                        <div>{fmtTimeShort(labPeriodRange(MORNING_ROWS + i).start)}</div>
-                        <div style={{ opacity: 0.7 }}>{fmtTimeShort(labPeriodRange(MORNING_ROWS + i).end)}</div>
-                      </td>
-                      {DAYS.map((d) => renderCellTd(d, MORNING_ROWS + i, d))}
-                    </tr>
-                  ))}
+                  {Array.from({ length: TOTAL_ROWS - MORNING_ROWS }, (_, i) => {
+                    const p = MORNING_ROWS + i;
+                    const t = theoryPeriodRange(p);
+                    const l = labPeriodRange(p);
+                    return (
+                      <tr key={`a${i}`}>
+                        <td
+                          className="tt-time"
+                          title={`Theory ${fmtTime(t.start)} - ${fmtTime(t.end)} · Lab ${fmtTime(l.start)} - ${fmtTime(l.end)}`}
+                        >
+                          <div className="tt-theory-time">{fmtTimeShort(t.start)}</div>
+                          <div className="tt-theory-time tt-theory-end">{fmtTimeShort(t.end)}</div>
+                          <div className="tt-lab-time">
+                            {`${fmtTimeShort(l.start)}–${fmtTimeShort(l.end)}`}
+                          </div>
+                        </td>
+                        {DAYS.map((d) => renderCellTd(d, p, d))}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}

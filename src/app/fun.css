@@ -174,14 +174,66 @@ table.tt thead th {
   border-bottom: 2.5px solid var(--ffcs-ink);
 }
 table.tt .tt-time {
-  width: 76px;
-  min-width: 76px;
+  width: 92px;
+  min-width: 92px;
   background: var(--time-bg);
   font-size: 0.72rem;
   line-height: 1.15;
   text-align: center;
   color: var(--muted-ink);
   padding: 3px 2px;
+}
+/* ---- theory-main / lab-sub time gutter (Chennai JSON timings) ---- */
+.tt-theory-time {
+  font-weight: 700;
+  color: var(--ffcs-ink);
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+.tt-theory-time.tt-theory-end {
+  font-weight: 600;
+  opacity: 0.75;
+}
+.tt-lab-time {
+  margin-top: 2px;
+  display: inline-block;
+  max-width: 100%;
+  font-size: 0.58rem;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #085aa5;
+  background: #d8ebfd;
+  border: 1px dashed rgba(11, 116, 213, 0.5);
+  border-radius: 6px 3px 7px 4px;
+  padding: 0 5px;
+}
+html.night-sketch .tt-lab-time {
+  color: #9ecfff;
+  background: rgba(11, 116, 213, 0.18);
+  border-color: rgba(158, 207, 255, 0.55);
+}
+html.theme-nerd .tt-lab-time {
+  border-radius: 4px;
+  font-style: normal;
+}
+.tt-time-h .tt-theory-time {
+  font-size: 0.62rem;
+}
+.tt-time-h .tt-lab-time {
+  font-size: 0.55rem;
+  margin-top: 1px;
+  /* horizontal columns are ~46px wide — let the sub-time wrap instead of overflowing */
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.3;
+  padding: 0 3px;
+  overflow-wrap: anywhere;
 }
 table.tt td.tt-cell {
   height: 34px;

@@ -1,10 +1,13 @@
 /**
  * FFCSketch — VIT slot system (VIT CHENNAI campus only)
  *
- * Slot timing table reverse-engineered from FFCSonTheGo (vatz88) Fall 2026-27 data:
- *  - Chennai: 55-min periods (8:00, 8:55, 9:50, 10:45, 11:40, 12:35 ... )
- *    incl. noon S11/S15 and evening S1-S4 slots, TBB1/TDD1
- *  - Lab grid: 12 lab periods/day (L1-L30 morning, L31-L60 afternoon)
+ * Slot timing tables (Chennai, from official JSON):
+ *  - Theory (MAIN grid rows): 8:00-8:50, 8:55-9:45, 9:50-10:40, 10:45-11:35,
+ *    11:40-12:30, 12:35-13:25 (S11/S15), lunch, 14:00-14:50, 14:55-15:45,
+ *    15:50-16:40, 16:45-17:35, 17:40-18:30, 18:35-19:25 (S1-S4)
+ *  - Lab (SUB rows, shown below theory in a different hue): 8:00-8:50,
+ *    8:50-9:40, 9:50-10:40, 10:40-11:30, 11:40-12:30, 12:30-13:20, lunch,
+ *    14:00-14:50, 14:50-15:40, 15:50-16:40, 16:40-17:30, 17:40-18:30, 18:30-19:20
  *
  * All times are minutes-from-midnight. 8:00 => 480, 14:00 => 840.
  */
@@ -41,18 +44,40 @@ export function fmtTimeShort(min: number): string {
 /* Lab period grid (shared by both campuses)                           */
 /* ------------------------------------------------------------------ */
 
-/** Morning lab period starts (P1..P6), afternoon (P7..P12) — 50 min each */
+/** Morning lab period starts (P1..P6), afternoon (P7..P12) — 50 min each.
+ *  From official lab JSON: 8:00, 8:50, 9:50, 10:40, 11:40, 12:30 / 14:00, 14:50, 15:50, 16:40, 17:40, 18:30 */
 const LAB_MORNING_STARTS = [t("8:00"), t("8:50"), t("9:50"), t("10:40"), t("11:40"), t("12:30")];
 const LAB_AFTERNOON_STARTS = [t("14:00"), t("14:50"), t("15:50"), t("16:40"), t("17:40"), t("18:30")];
 export const LAB_PERIOD_STARTS = [...LAB_MORNING_STARTS, ...LAB_AFTERNOON_STARTS];
+
+/** Theory periods (MAIN rows) — from official theory JSON, 1:1 with the 12 lab rows.
+ *  Alternating rows share lab times exactly; the others run +5 min late. */
+export const THEORY_PERIODS: { start: number; end: number }[] = [
+  { start: t("8:00"), end: t("8:50") },
+  { start: t("8:55"), end: t("9:45") },
+  { start: t("9:50"), end: t("10:40") },
+  { start: t("10:45"), end: t("11:35") },
+  { start: t("11:40"), end: t("12:30") },
+  { start: t("12:35"), end: t("13:25") },
+  { start: t("14:00"), end: t("14:50") },
+  { start: t("14:55"), end: t("15:45") },
+  { start: t("15:50"), end: t("16:40") },
+  { start: t("16:45"), end: t("17:35") },
+  { start: t("17:40"), end: t("18:30") },
+  { start: t("18:35"), end: t("19:25") },
+];
+
+export function theoryPeriodRange(periodIdx: number): { start: number; end: number } {
+  return THEORY_PERIODS[periodIdx];
+}
 
 export const MORNING_ROWS = 6;
 export const LUNCH_ROW = MORNING_ROWS; // row index in grid (visual)
 export const TOTAL_ROWS = 12;
 
-/** Lunch break — 1:20 PM to 2:00 PM at VIT Chennai (last morning period ends 13:20) */
-export const LUNCH = { start: t("13:20"), end: t("14:00") };
-/** "1:20 PM - 2:00 PM" — single source of truth for every lunch label */
+/** Lunch break — 1:25 PM to 2:00 PM at VIT Chennai (last theory period S11/S15 ends 13:25) */
+export const LUNCH = { start: t("13:25"), end: t("14:00") };
+/** "1:25 PM - 2:00 PM" — single source of truth for every lunch label */
 export const LUNCH_LABEL = `${fmtTime(LUNCH.start)} - ${fmtTime(LUNCH.end)}`;
 /** Extra row for V3-V7 (Vellore) / S1-S4 (Chennai) evening classes */
 export const EXTRA_ROW = TOTAL_ROWS;
@@ -89,7 +114,7 @@ const CHENNAI_THEORY: TheoryRow[] = [
   { start: t("9:50"), end: t("10:40"), days: { mon: "D1", tue: "E1", wed: "F1", thu: "G1", fri: "TA1" } },
   { start: t("10:45"), end: t("11:35"), days: { mon: "TB1", tue: "TC1", wed: "TD1", thu: "TE1", fri: "TF1" } },
   { start: t("11:40"), end: t("12:30"), days: { mon: "TG1", tue: "TAA1", wed: "TBB1", thu: "TCC1", fri: "TDD1" } },
-  { start: t("12:35"), end: t("13:20"), days: { mon: "S11", fri: "S15" } },
+  { start: t("12:35"), end: t("13:25"), days: { mon: "S11", fri: "S15" } },
   { start: t("14:00"), end: t("14:50"), days: { mon: "A2", tue: "B2", wed: "C2", thu: "D2", fri: "E2" } },
   { start: t("14:55"), end: t("15:45"), days: { mon: "F2", tue: "G2", wed: "A2", thu: "B2", fri: "C2" } },
   { start: t("15:50"), end: t("16:40"), days: { mon: "D2", tue: "E2", wed: "F2", thu: "G2", fri: "TA2" } },
