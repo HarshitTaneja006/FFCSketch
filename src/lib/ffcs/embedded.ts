@@ -25,18 +25,86 @@ export function partnerTypeOf(type: string): CourseType | undefined {
 const normF = (f: string) => (f || "").trim().toUpperCase();
 const normC = (c: string) => (c || "").trim().toUpperCase();
 
+export function getTheoryTime(slot: string): "morning" | "afternoon" | "unknown" {
+  const parts = (slot || "").split("+");
+  const has1 = parts.some((p) => /^[A-G]1|T[A-G]1|TAA1|TBB1|TCC1|TDD1/i.test(p));
+  const has2 = parts.some((p) => /^[A-G]2|T[A-G]2|TAA2|TBB2|TCC2|TDD2/i.test(p));
+  if (has1 && !has2) return "morning";
+  if (has2 && !has1) return "afternoon";
+  if (/1/.test(slot) && !/2/.test(slot)) return "morning";
+  if (/2/.test(slot) && !/1/.test(slot)) return "afternoon";
+  return "unknown";
+}
+
+export function getLabMinNumber(slot: string): number {
+  const matches = (slot || "").match(/\d+/g);
+  if (!matches) return 0;
+  return Math.min(...matches.map(Number));
+}
+
+/**
+ * Score a potential Theory-Lab pair according to VIT rules:
+ * - Theory in morning -> Lab in afternoon (L > 30)
+ * - Theory in afternoon -> Lab in morning (L <= 30)
+ * - If labs in same window: lesser lab belongs to afternoon theory, greater lab to morning theory
+ */
+function pairScore(theorySlot: string, labSlot: string): number {
+  const tTime = getTheoryTime(theorySlot);
+  const labNum = getLabMinNumber(labSlot);
+  const isMornLab = labNum <= 30;
+
+  if (tTime === "morning") {
+    return !isMornLab ? 1000 + labNum : 100 + labNum;
+  } else if (tTime === "afternoon") {
+    return isMornLab ? 1000 - labNum : 100 - labNum;
+  }
+  return 500;
+}
+
 /** Dataset sections that complete `section`'s pair: same course code,
- *  complementary type (ETH⇄ELA) and the SAME faculty.
- *  Empty when that faculty publishes no such half. */
+ *  complementary type (ETH⇄ELA) and the SAME faculty, sorted with the
+ *  exact VIT-rule matching partner first. */
 export function findEmbeddedPartners(
-  section: Pick<CourseSection, "code" | "type" | "faculty">
+  section: Pick<CourseSection, "code" | "type" | "faculty"> & Partial<Pick<CourseSection, "slot" | "id" | "partnerId">>
 ): CourseSection[] {
   const partner = partnerTypeOf(section.type);
   if (!partner) return [];
   const f = normF(section.faculty);
-  return ALL_SECTIONS.filter(
-    (s) => normC(s.code) === normC(section.code) && s.type === partner && normF(s.faculty) === f
+  const c = normC(section.code);
+
+  const candidates = ALL_SECTIONS.filter(
+    (s) => normC(s.code) === c && s.type === partner && normF(s.faculty) === f
   );
+
+  if (candidates.length <= 1) return candidates;
+
+  // 1. If section already has a pre-linked partnerId
+  if (section.partnerId) {
+    const direct = candidates.find((s) => s.id === section.partnerId);
+    if (direct) {
+      return [direct, ...candidates.filter((s) => s.id !== direct.id)];
+    }
+  }
+
+  // 2. If a candidate already has partnerId matching section.id
+  if (section.id) {
+    const direct = candidates.find((s) => s.partnerId === section.id);
+    if (direct) {
+      return [direct, ...candidates.filter((s) => s.id !== direct.id)];
+    }
+  }
+
+  // 3. Dynamic ranking based on the VIT pairing rule if slot is present
+  if (section.slot) {
+    const isEth = section.type === "ETH";
+    return [...candidates].sort((a, b) => {
+      const scoreA = isEth ? pairScore(section.slot!, a.slot) : pairScore(a.slot, section.slot!);
+      const scoreB = isEth ? pairScore(section.slot!, b.slot) : pairScore(b.slot, section.slot!);
+      return scoreB - scoreA;
+    });
+  }
+
+  return candidates;
 }
 
 /** One embedded-pair violation found in a table (deduped per course code) */
@@ -74,7 +142,25 @@ export function embeddedPairProblems(entries: CartEntry[]): PairProblem[] {
     const partner = entries.find(
       (o) => normC(o.code) === codeKey && o.type === needType
     );
-    if (partner && normF(partner.faculty) === normF(e.faculty)) continue; // ✅ valid pair
+    if (partner && normF(partner.faculty) === normF(e.faculty)) {
+      const theory = e.type === "ETH" ? e : partner;
+      const lab = e.type === "ETH" ? partner : e;
+      if (theory.partnerId && lab.partnerId && theory.partnerId !== lab.id) {
+        const fixesLab = findEmbeddedPartners(theory);
+        problems.push({
+          code: e.code,
+          kind: "mismatch",
+          theory,
+          lab,
+          needType: "ELA",
+          needFaculty: theory.faculty,
+          fixes: fixesLab,
+          fixReplaceUid: lab.uid,
+        });
+        continue;
+      }
+      continue; // ✅ valid pair
+    }
     if (partner) {
       const theory = e.type === "ETH" ? e : partner;
       const lab = e.type === "ETH" ? partner : e;

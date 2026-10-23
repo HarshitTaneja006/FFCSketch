@@ -57,6 +57,104 @@ function isTheorySlot(slot) {
   return parts.some((p) => /^[A-G]|^(T[A-G]|TAA|TBB|TCC|TDD|TEE|TFF|S\d+|[IMNRU]\d+)/i.test(p));
 }
 
+function getTheoryTime(slot) {
+  const parts = (slot || '').split('+');
+  const has1 = parts.some(p => /^[A-G]1|T[A-G]1|TAA1|TBB1|TCC1|TDD1/i.test(p));
+  const has2 = parts.some(p => /^[A-G]2|T[A-G]2|TAA2|TBB2|TCC2|TDD2/i.test(p));
+  if (has1 && !has2) return 'morning';
+  if (has2 && !has1) return 'afternoon';
+  if (/1/.test(slot) && !/2/.test(slot)) return 'morning';
+  if (/2/.test(slot) && !/1/.test(slot)) return 'afternoon';
+  return 'unknown';
+}
+
+function getLabMinNumber(slot) {
+  const matches = (slot || '').match(/\d+/g);
+  if (!matches) return 0;
+  return Math.min(...matches.map(Number));
+}
+
+/**
+ * Score a potential Theory-Lab pair according to VIT rules:
+ * - Theory in morning -> Lab in afternoon (L > 30)
+ * - Theory in afternoon -> Lab in morning (L <= 30)
+ * - If labs in same window: lesser lab belongs to afternoon theory, greater lab to morning theory
+ */
+function pairScore(theorySlot, labSlot) {
+  const tTime = getTheoryTime(theorySlot);
+  const labNum = getLabMinNumber(labSlot);
+  const isMornLab = labNum <= 30;
+
+  if (tTime === 'morning') {
+    if (!isMornLab) {
+      return 1000 + labNum; // afternoon lab: strongly preferred, higher lab num preferred
+    } else {
+      return 100 + labNum; // morning lab fallback: higher lab num preferred
+    }
+  } else if (tTime === 'afternoon') {
+    if (isMornLab) {
+      return 1000 - labNum; // morning lab: strongly preferred, lesser lab num preferred
+    } else {
+      return 100 - labNum; // afternoon lab fallback: lesser lab num preferred
+    }
+  }
+  return 500;
+}
+
+function permute(arr) {
+  if (arr.length <= 1) return [arr];
+  const res = [];
+  for (let i = 0; i < arr.length; i++) {
+    const rest = [...arr.slice(0, i), ...arr.slice(i + 1)];
+    for (const p of permute(rest)) {
+      res.push([arr[i], ...p]);
+    }
+  }
+  return res;
+}
+
+function findOptimalPairings(theories, labs) {
+  if (theories.length === 0 || labs.length === 0) return new Map();
+
+  if (theories.length === 1 && labs.length === 1) {
+    const map = new Map();
+    map.set(theories[0].id, labs[0]);
+    return map;
+  }
+
+  if (theories.length <= labs.length) {
+    let bestScore = -Infinity;
+    let bestMapping = null;
+    const labPerms = permute(labs);
+    for (const perm of labPerms) {
+      let score = 0;
+      for (let i = 0; i < theories.length; i++) {
+        score += pairScore(theories[i].slot, perm[i].slot);
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        bestMapping = theories.map((t, i) => [t.id, perm[i]]);
+      }
+    }
+    return new Map(bestMapping);
+  } else {
+    let bestScore = -Infinity;
+    let bestMapping = null;
+    const theoryPerms = permute(theories);
+    for (const perm of theoryPerms) {
+      let score = 0;
+      for (let i = 0; i < labs.length; i++) {
+        score += pairScore(perm[i].slot, labs[i].slot);
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        bestMapping = labs.map((l, i) => [perm[i].id, l]);
+      }
+    }
+    return new Map(bestMapping);
+  }
+}
+
 export function convertCourses(csvFile = csvPath, outFile = outputPath) {
   console.log(`Reading CSV from: ${csvFile}`);
   const content = fs.readFileSync(csvFile, 'utf8');
@@ -155,13 +253,47 @@ export function convertCourses(csvFile = csvPath, outFile = outputPath) {
     });
   }
 
+  // Pre-link embedded pairs (ETH <-> ELA) for the same course and faculty
+  const eths = outputSections.filter((s) => s.type === 'ETH');
+  const elas = outputSections.filter((s) => s.type === 'ELA');
+
+  const facultyGroups = new Map();
+  eths.forEach((e) => {
+    const key = e.code + '|' + e.faculty.toUpperCase();
+    if (!facultyGroups.has(key)) facultyGroups.set(key, { theories: [], labs: [] });
+    facultyGroups.get(key).theories.push(e);
+  });
+  elas.forEach((l) => {
+    const key = l.code + '|' + l.faculty.toUpperCase();
+    if (!facultyGroups.has(key)) facultyGroups.set(key, { theories: [], labs: [] });
+    facultyGroups.get(key).labs.push(l);
+  });
+
+  let linkedPairs = 0;
+  for (const [key, group] of facultyGroups.entries()) {
+    if (group.theories.length > 0 && group.labs.length > 0) {
+      const assignment = findOptimalPairings(group.theories, group.labs);
+      for (const [theoryId, lab] of assignment.entries()) {
+        const theory = group.theories.find((t) => t.id === theoryId);
+        if (theory && lab) {
+          theory.partnerId = lab.id;
+          theory.partnerSlot = lab.slot;
+          lab.partnerId = theory.id;
+          lab.partnerSlot = theory.slot;
+          linkedPairs++;
+        }
+      }
+    }
+  }
+  console.log(`Pre-linked ${linkedPairs} embedded theory-lab pairs.`);
+
   console.log(`Transformed ${outputSections.length} sections across ${byCode.size} courses.`);
   console.log('Type breakdown:', typeCounts);
 
   fs.writeFileSync(outFile, JSON.stringify(outputSections, null, 2), 'utf8');
   console.log(`Saved output to ${outFile}`);
 
-  return { total: outputSections.length, courses: byCode.size, typeCounts };
+  return { total: outputSections.length, courses: byCode.size, typeCounts, linkedPairs };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

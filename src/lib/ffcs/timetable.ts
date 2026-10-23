@@ -28,6 +28,7 @@ import {
   fmtTime,
   LUNCH,
 } from "./slots";
+import { findEmbeddedPartners } from "./embedded";
 
 /** theory meeting lookup for the current (Chennai) campus */
 const SLOT_MEETINGS_CHENNAI = SLOT_MEETINGS.chennai;
@@ -419,9 +420,14 @@ export function generateTimetables(
       const eths = sections.filter((s) => s.type === "ETH");
       const elas = sections.filter((s) => s.type === "ELA");
       for (const eth of eths) {
-        const labs = elas.filter((l) => normFaculty(l.faculty) === normFaculty(eth.faculty));
-        if (labs.length === 0) units.push([eth]); // no same-faculty lab published — theory stands alone (flagged in the course list)
-        else for (const lab of labs) units.push([eth, lab]);
+        const partners = findEmbeddedPartners(eth);
+        if (partners.length === 0) {
+          units.push([eth]);
+        } else if (eth.partnerId) {
+          units.push([eth, partners[0]]);
+        } else {
+          for (const lab of partners) units.push([eth, lab]);
+        }
       }
       // labs whose faculty has no theory half cannot form a registrable unit
     } else {

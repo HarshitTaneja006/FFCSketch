@@ -45,6 +45,8 @@ export interface CourseSection {
   classId?: string;
   erpId?: string;
   school?: string;
+  partnerId?: number;
+  partnerSlot?: string;
 }
 
 /** Stage-1 grouped course summary for the 2-stage picker */
