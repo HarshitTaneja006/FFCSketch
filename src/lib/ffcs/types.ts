@@ -42,6 +42,9 @@ export interface CourseSection {
   /** Classroom / lab venue from the Chennai course report (may be absent on
    *  custom or imported courses) */
   venue?: string;
+  classId?: string;
+  erpId?: string;
+  school?: string;
 }
 
 /** Stage-1 grouped course summary for the 2-stage picker */

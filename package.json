@@ -6,7 +6,8 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "preview": "npx serve out",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "courses:update": "node scripts/update-courses.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
