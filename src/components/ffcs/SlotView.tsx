@@ -5,7 +5,10 @@
  *
  * Stack any number of slot codes onto a live weekly grid to check whether a
  * slot combination is clash-free BEFORE you hunt for course sections.
- * - tap slot chips (theory + lab) to toggle them onto the grid
+ * - tap slot chips (theory + lab) or click grid cells to toggle them onto the grid
+ * - clicking a grid cell cycles: Theory -> Lab (with pair) -> Clear
+ * - selecting a lab slot automatically selects its partner (pairs of 2, e.g. L1+L2)
+ * - cells show normal slot numbering (e.g. A1 · L1) and fill like normal timetable blocks
  * - overlapping slots light up as red conflict cells with pair tooltips
  * - "load my table" imports the slots your current table already uses
  * - a clash-free stack can be turned into a custom course in one click
@@ -26,11 +29,13 @@ import {
   allTheorySlots,
   fmtTime,
   fmtTimeShort,
+  getLabPartner,
   labPeriodRange,
   L_SLOT_MAP,
   LUNCH_LABEL,
   MORNING_ROWS,
   SLOT_MEETINGS,
+  slotsAtCell,
   TOTAL_ROWS,
   theoryPeriodRange,
 } from "@/lib/ffcs/slots";
@@ -64,8 +69,47 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
   const [picked, setPicked] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
 
-  const toggle = (code: string) =>
+  /* precalculate theory slot, lab slot and label for every cell (Chennai timings) */
+  const cellSlotMap = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        theorySlot: string | null;
+        labSlot: string | null;
+        label: string;
+      }
+    >();
+    for (const day of DAYS) {
+      for (let p = 0; p < TOTAL_ROWS; p++) {
+        const codes = slotsAtCell(day, p, "chennai");
+        const theory = codes.filter((c) => c.kind === "theory").map((c) => c.slot);
+        const labs = codes.filter((c) => c.kind === "lab").map((c) => c.slot);
+        const theorySlot = theory[0] || null;
+        const labSlot = labs[0] || null;
+        const label = [...theory, ...labs].join(" · ");
+        map.set(`${day}|${p}`, { theorySlot, labSlot, label });
+      }
+    }
+    return map;
+  }, []);
+
+  /* toggle a theory slot code */
+  const toggleTheory = (code: string) =>
     setPicked((p) => (p.includes(code) ? p.filter((c) => c !== code) : [...p, code]));
+
+  /* toggle a lab slot code — automatically synchronizes with its paired partner */
+  const toggleLab = (code: string) => {
+    const partner = getLabPartner(code);
+    const pair = partner ? [code, partner] : [code];
+    setPicked((p) => {
+      const anyPicked = pair.some((c) => p.includes(c));
+      if (anyPicked) {
+        return p.filter((c) => !pair.includes(c));
+      } else {
+        return [...p, ...pair];
+      }
+    });
+  };
 
   const loadMyTable = () => {
     const codes = [...new Set(Object.keys(usedSlots))];
@@ -73,6 +117,24 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
   };
 
   const f = filter.trim().toLowerCase();
+
+  /* palette color map: ensures paired labs share the exact same hue */
+  const slotColorMap = useMemo(() => {
+    const map = new Map<string, number>();
+    let nextColor = 0;
+    for (const code of picked) {
+      if (map.has(code)) continue;
+      const partner = getLabPartner(code);
+      if (partner && picked.includes(partner)) {
+        const c = nextColor++ % GRID_COLORS;
+        map.set(code, c);
+        map.set(partner, c);
+      } else {
+        map.set(code, nextColor++ % GRID_COLORS);
+      }
+    }
+    return map;
+  }, [picked]);
 
   /* ---------- meetings for each picked slot ---------- */
   const slotMeetings = useMemo(() => {
@@ -96,9 +158,9 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
       Array.from({ length: TOTAL_ROWS }, () => ({ slots: [] }))
     );
     const extraRow: { code: string; colorIdx: number }[] = [];
-    picked.forEach((code, i) => {
+    picked.forEach((code) => {
       const ms = slotMeetings.get(code) || [];
-      const colorIdx = i % GRID_COLORS;
+      const colorIdx = slotColorMap.get(code) ?? 0;
       for (const m of ms) {
         const dayIdx = DAYS.indexOf(m.day);
         if (dayIdx < 0) continue;
@@ -119,7 +181,7 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
       }
     });
     return { cells, extraRow };
-  }, [picked, slotMeetings]);
+  }, [picked, slotMeetings, slotColorMap]);
 
   /* ---------- conflict stats ---------- */
   const conflicts = useMemo(() => {
@@ -144,42 +206,119 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
 
   const clashFree = picked.length > 1 && conflicts.length === 0;
 
+  /**
+   * Click-to-cycle a timetable cell:
+   * 1. Empty / none picked -> pick Theory slot (e.g. A1)
+   * 2. Theory picked -> switch to Lab slot (paired with partner, e.g. L1+L2)
+   * 3. Lab picked (or clash) -> clear cell
+   */
+  const handleCellClick = (day: Day, periodIdx: number) => {
+    const di = DAYS.indexOf(day);
+    if (di < 0) return;
+    const cellData = cellSlotMap.get(`${day}|${periodIdx}`);
+    const theorySlot = cellData?.theorySlot || null;
+    const labSlot = cellData?.labSlot || null;
+    const labPartner = labSlot ? getLabPartner(labSlot) : null;
+    const labPair = [labSlot, labPartner].filter(Boolean) as string[];
+
+    const currentCellSlots = grid.cells[di][periodIdx].slots.map((s) => s.code);
+    const hasLab = labPair.some((l) => currentCellSlots.includes(l));
+    const hasTheory = theorySlot
+      ? currentCellSlots.includes(theorySlot)
+      : currentCellSlots.length > 0 && !hasLab;
+
+    setPicked((currentPicked) => {
+      // 1. If currently hasLab (or has clash/both): clear all slots associated with this cell
+      if (hasLab) {
+        return currentPicked.filter(
+          (c) => c !== theorySlot && !labPair.includes(c) && !currentCellSlots.includes(c)
+        );
+      }
+
+      // 2. If currently hasTheory (and not Lab): switch to Lab pair
+      if (hasTheory) {
+        const withoutTheory = currentPicked.filter(
+          (c) => c !== theorySlot && !currentCellSlots.includes(c)
+        );
+        if (labPair.length > 0) {
+          return [...withoutTheory, ...labPair];
+        }
+        return withoutTheory;
+      }
+
+      // 3. If empty / neither: pick Theory (or Lab pair if no theory slot maps here)
+      if (theorySlot) {
+        return [...currentPicked, theorySlot];
+      }
+      if (labPair.length > 0) {
+        return [...currentPicked, ...labPair];
+      }
+      return currentPicked;
+    });
+  };
+
   /** one grid cell (no key — caller supplies it, key differs per orientation) */
   const renderCellTd = (day: Day, periodIdx: number, key: string | number) => {
     const di = DAYS.indexOf(day);
     const info = grid.cells[di][periodIdx];
     const isConflict = info.slots.length >= 2;
+    const isEmpty = info.slots.length === 0;
+    const cellData = cellSlotMap.get(`${day}|${periodIdx}`);
+    const slotLabel = cellData?.label || "";
+
     return (
       <td
         key={key}
-        className={`tt-cell${isConflict ? " slotview-conflict" : ""}`}
+        className={`tt-cell${isEmpty ? " tt-empty" : ""}${isConflict ? " slotview-conflict" : ""}`}
+        onClick={() => handleCellClick(day, periodIdx)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleCellClick(day, periodIdx);
+          }
+        }}
+        style={{ cursor: "pointer" }}
         title={
-          info.slots.length > 0
-            ? info.slots.map((s) => s.code).join(" ⚡ ") + (isConflict ? " — CONFLICT!" : "")
-            : undefined
+          !isEmpty
+            ? `${info.slots.map((s) => s.code).join(" ⚡ ")}${isConflict ? " — CONFLICT!" : ""} (click to switch / clear)`
+            : `${slotLabel || "Free"} — click to pick slot`
         }
       >
-        {info.slots.length === 0 ? (
-          <div style={{ height: 30 }} aria-hidden />
+        {isEmpty ? (
+          <div className="tt-empty-slot" aria-hidden>
+            {slotLabel}
+          </div>
         ) : (
           <div
-            className="flex flex-wrap gap-0.5 items-center justify-center"
-            style={{ minHeight: 30 }}
+            style={{
+              display: "flex",
+              gap: 2,
+              height: "100%",
+              width: "100%",
+              alignItems: "stretch",
+            }}
           >
             {info.slots.map((s, i) => (
-              <span
+              <div
                 key={`${s.code}-${i}`}
-                className={`tt-block tt-${s.colorIdx}`}
+                className={`tt-block tt-${s.colorIdx}${isConflict ? " is-clash" : ""}`}
                 style={{
-                  display: "inline-block",
-                  fontSize: "0.68rem",
-                  padding: "1px 5px",
-                  minHeight: 0,
+                  flex: 1,
+                  minWidth: 0,
                   height: "auto",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  margin: 1,
                 }}
               >
-                {s.code}
-              </span>
+                <div className="ttb-code" style={{ textAlign: "center" }}>
+                  {s.code}
+                </div>
+              </div>
             ))}
           </div>
         )}
@@ -252,8 +391,8 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
           </div>
         </div>
         <p style={{ fontSize: "0.8rem", color: "var(--muted-ink)", margin: "0 0 8px" }}>
-          Tap slot codes to pencil them onto the weekly grid — instantly see whether the
-          combination is clash-free. ✏ stamps = slots your table already uses.
+          Tap cells or slot chips to pencil them onto the weekly grid — clicking a cell cycles
+          Theory → Lab (with pair) → Clear. ✏ stamps = slots your table already uses.
         </p>
 
         <div className="relative mb-2">
@@ -281,19 +420,19 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
             {theorySlots
               .filter((c) => !f || c.toLowerCase().includes(f))
               .map((c) => {
-                const idx = picked.indexOf(c);
-                const selected = idx >= 0;
+                const selected = picked.includes(c);
+                const colorIdx = slotColorMap.get(c) ?? 0;
                 return (
                   <button
                     key={c}
-                    onClick={() => toggle(c)}
+                    onClick={() => toggleTheory(c)}
                     aria-pressed={selected}
                     title={usedSlots[c] ? `Used by: ${usedSlots[c].join(", ")}` : `Toggle ${c}`}
-                    className={`chip clickable${selected ? ` tt-${idx % GRID_COLORS}` : ""}`}
+                    className={`chip clickable${selected ? ` tt-${colorIdx}` : ""}`}
                     style={{
                       fontSize: "0.72rem",
                       padding: "2px 8px",
-                      background: selected ? `var(--tt${idx % GRID_COLORS})` : "var(--input)",
+                      background: selected ? `var(--tt${colorIdx})` : "var(--input)",
                       textDecoration: !selected && usedSlots[c] ? "underline dotted" : undefined,
                     }}
                   >
@@ -308,19 +447,24 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
             {labSlots
               .filter((c) => !f || c.toLowerCase().includes(f))
               .map((c) => {
-                const idx = picked.indexOf(c);
-                const selected = idx >= 0;
+                const selected = picked.includes(c);
+                const colorIdx = slotColorMap.get(c) ?? 0;
+                const partner = getLabPartner(c);
                 return (
                   <button
                     key={c}
-                    onClick={() => toggle(c)}
+                    onClick={() => toggleLab(c)}
                     aria-pressed={selected}
-                    title={usedSlots[c] ? `Used by: ${usedSlots[c].join(", ")}` : `Toggle ${c}`}
-                    className={`chip clickable${selected ? ` tt-${idx % GRID_COLORS}` : ""}`}
+                    title={
+                      usedSlots[c]
+                        ? `Used by: ${usedSlots[c].join(", ")} (pairs with ${partner})`
+                        : `Toggle ${c} ${partner ? `(paired with ${partner})` : ""}`
+                    }
+                    className={`chip clickable${selected ? ` tt-${colorIdx}` : ""}`}
                     style={{
                       fontSize: "0.72rem",
                       padding: "2px 8px",
-                      background: selected ? `var(--tt${idx % GRID_COLORS})` : "var(--input)",
+                      background: selected ? `var(--tt${colorIdx})` : "var(--input)",
                       textDecoration: !selected && usedSlots[c] ? "underline dotted" : undefined,
                     }}
                   >
@@ -520,7 +664,10 @@ export function SlotView({ usedSlots = {}, exportRef, onCreateCourse }: Props) {
           <div className="flex flex-wrap items-center gap-2 mt-2">
             <span className="ffcs-label">Legend:</span>
             <span className="chip" style={{ fontSize: "0.72rem" }}>
-              colored chips = picked slots
+              colored blocks = picked slots
+            </span>
+            <span className="chip" style={{ fontSize: "0.72rem", opacity: 0.85 }}>
+              💡 click cell to cycle Theory → Lab → Clear
             </span>
             <span className="chip" style={{ fontSize: "0.72rem", opacity: 0.7 }}>
               ✏ dotted = already used in your table

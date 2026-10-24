@@ -100,6 +100,17 @@ export const L_SLOT_MAP: Record<string, { day: Day; periodIdx: number }> = (() =
   return map;
 })();
 
+/** Given a lab slot (e.g. "L1"), returns its partner slot in the 2-period lab pair ("L2") and vice-versa */
+export function getLabPartner(code: string): string | null {
+  const match = code.match(/^L(\d+)$/);
+  if (!match) return null;
+  const n = parseInt(match[1], 10);
+  if (isNaN(n) || n < 1 || n > 60) return null;
+  const partnerN = n % 2 === 1 ? n + 1 : n - 1;
+  const partner = `L${partnerN}`;
+  return L_SLOT_MAP[partner] ? partner : null;
+}
+
 /* ------------------------------------------------------------------ */
 /* Theory slot timing tables                                           */
 /* ------------------------------------------------------------------ */
